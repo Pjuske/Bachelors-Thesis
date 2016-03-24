@@ -39,7 +39,7 @@ void initialize_single_source(){
 
 int main(){
 	int amount = 4;
-	int edge_number = 0;
+	//int edge_number = 0;
 
 	//add vertices into the graph
 	vertex graph[amount];
@@ -51,11 +51,25 @@ int main(){
 	}
 
 	//add edges with weight 7 and 2 from vertex 0
-	add_edge(graph, 0, 1, 7, edge_number);
-	add_edge(graph, 0, 2, 2, edge_number);
 
+	//Den her graf er den vi talte om, du kan nemt tegne den (hhv. src-knude, dst-knude, vægt)
+	add_edge(graph, 0, 1, 7, 0);
+	add_edge(graph, 0, 2, 2, 1);
+
+	add_edge(graph, 1, 2, 1, 0);
+	add_edge(graph, 1, 3, 5, 1);
+	
+	add_edge(graph, 2, 3, 2, 0);
+	//cout << (sizeof(graph)/sizeof(graph[0])); Returns 4, which is the number of vertices in our graph
+	
+	for (int i = 0; i < ((sizeof(graph)/sizeof(graph[0]))-1); i++) //Print function for printing edges, does only print the first edge in each vertix though!
+	{
+		cout << graph[i].edges[0]->weight;
+		cout << graph[i].edges[0]->source;
+		cout << graph[i].edges[0]->destination << endl;
+	}	
 	//reset edge_number when all edges going from a vertex has been added?
-	edge_number = 0;
+	//edge_number = 0;
 
 	return 0;
 } 
