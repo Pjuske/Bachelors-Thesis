@@ -2,6 +2,8 @@
 \usepackage[a4paper, hmargin={2.8cm, 2.8cm}, vmargin={2.5cm, 2.5cm}]{geometry}
 \usepackage{eso-pic} % \AddToShipoutPicture
 \usepackage{graphicx} % \includegraphics
+\usepackage{tabto}
+\usepackage{enumerate}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -18,18 +20,16 @@
 
 \author{
   \Large{Bjarke Kingo Iversen}
-  \\ \texttt{bob@gmail.com} \\\\
+  \\ \texttt{bjarkekingo50@gmail.com} \\\\
   \Large{Susanne Truong}
-  \\ \texttt{alice@gmail.com}
+  \\ \texttt{suzze-t@hotmail.com}
 }
-
 
 \date{
     \today
 }
 
 \begin{document}
-
 
 \AddToShipoutPicture*{\put(0,0){\includegraphics*[viewport=0 0 700 600]{\ColourPDF}}}
 \AddToShipoutPicture*{\put(0,602){\includegraphics*[viewport=0 600 700 1600]{\ColourPDF}}}
@@ -51,14 +51,105 @@ It is widely known that it can be time-consuming to choose the wrong path, if yo
 For computersystems to choose such a path, they'd need a method for calculating such, an algorithm.\\
 Different shortest-path algorithms are known to solve such problems theoretically. We'll examine the theory behind these, and analyse the complexity to see whether the time-complexity given by Bellmann-Ford and Dijkstras algorithms holds in real life implementations, by implementing them with both a binary and a fibonacci-heap in C++, thus finally to match them all up against each other.\\
 We'll as well analyse and implement the A*-algorithm to see how well dijkstra match up against this on euclidean planar graphs. Since we're primarily interested in road-maps, we won't consider negative weights.\\
+
 \section{Problem definition}
 To examine and benchmark the complexity of different shortest-path algorithms, e.g. Dijkstra, Bellmann-Ford, and A* Search. We will do this by implementing and comparing them using different data structures and libraries. Finally we will compare the results of these experiments with the theoretical bounds.
-\section{On Shortest Paths}
-\section{Bellmann Ford}
 
-\section{Dijkstra}
+\section{On Shortest Paths}
+In the shortest path problem, a graph $G = (V,E)$ is given, where $V$
+is the set of vertices, and $E$ is the set of edges. Each edge
+connects two vertices and contains a weight, indicating the cost of
+moving between these vertices. By using a shortest path algorithm, we
+can find a shortest path $P = {v_{1}, v_{2}, ..., v_{n}} \in V$ from a
+given source vertex $s \in V$ to all other vertices $v \in V$. I.e.,
+we want to find a path, where the total weight of the visited edges is
+minimal.\\
+
+\noindent
+\textbf{Relaxation}\\
+When searching for the shortest path from a source vertex $s$ to a
+vertex $v$, a shortest-path estimate $v.d$ is preserved for each
+vertex $v \in V$. At first, $v.d$ will be an overestimate, but if we see that the shortest path to $v$ can be improved by going through a vertex $u$, we update the estimate $v.d$ with the new and lower cost. As better paths are found, we will eventually get the correct estimate and find the shortest path, if it exists. This technique is called relaxation and is used by the three algorithms that we will talk about later. The pseudocode for relaxing an edge $(u,v) $ is shown below:\footnote{Introduction to Algorithms, pg. 649}\\
+
+%\noindent
+\textbf{RELAX$(u, v, w)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item \textbf{if } $v.d > u.d + w(u,v)$
+\item \tab{$v.d = u.d + w(u,v)$}
+\item \tab{$v.\pi = u$}
+\end{enumerate}
+(explain the pseudocode :) )\\
+
+\noindent
+(Dry run relaxation of an edge? One in which a shortest- path estimate decreases and one in which no estimate changes... -> see pg. 649)\\
+
+
+\section{Bellmann-Ford algorithm}
+...\\
+
+\section{Dijkstra's algorithm}
+Dijkstra's algorithm takes a weighted graph $G = (V, E)$ and finds the shortest path from a single source to a single target.\\   
+
+\noindent
+\textbf{Assumptions}\\
+For Dijkstra's algorithm to work, we must assume that the graph contains no negative weights or cycles. If there is a negative cycle, the cost of the shortest path is decreased every time the algorithm runs through the negative cycle. By doing this numerous times, we can receive arbitrarily negative weights, thus making the cost undefined. 
+
+(should we prove that if we move forward, the weight should not become smaller?)\\\\
+
+\noindent
+(\textbf{Does the graph have to be connected???}\\
+A connected graph means that for all $v \in V $,a vertex $v$ will be reachable from another vertex $w$ through an edge. If the graph is disconnected, some vertices will be unreachable, thus making some shortest paths infinite, if we try to reach these vertices.)\\\\
+
+http://stackoverflow.com/questions/13159337/why-doesnt-dijkstras-algorithm-work-for-negative-weight-edges\\
+
+http://stackoverflow.com/questions/20123076/can-dijkstras-single-source-shortest-path-algorithm-dectect-an-infinite-cycle-i\\
+
+\noindent
+\textbf{How Dijkstra's algorithm work}:\\
+The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction to Algorithms, pg. 658}\\
+
+
+\textbf{DIJKSTRA$(G, w, s)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item INITIALIZE-SINGLE-SOURCE$(G, s)$
+\item $S = \O$
+\item $Q = G.V$
+\item $\textbf{while } Q \neq \O$
+\item \tab{$u = $ EXTRACT-MIN$(Q)$}
+\item \tab{$S = S \cup \{u\}$}
+\item \tab{\textbf{for} each vertex $v \in G.Adj[u]$}
+\item \tab{}\tab{RELAX$(u,v,w)$}
+\end{enumerate}
+
+\noindent
+\\
+(write explanation of pseudocode and dry run an example? :))
+
 
 \section{A* search}
+...\\
+\section{Proving the correctness of shortest path algorithms}
+The shortest path algorithms that we have talked about will always find a shortest path, if it exists. This can be proved by looking at the properties that shortest paths and relaxation have:\footnote{Introduction to Algorithms, pg. 650}
+
+\begin{itemize}
+\item \textbf{Triangle inequality}\\
+...
+\item \textbf{Upper-bound property}\\
+...
+\item \textbf{No-path property}\\
+...
+\item \textbf{Convergence property}\\
+...
+\item \textbf{Path-relaxation property}\\
+...
+\item \textbf{Predecessor-subgraph property}\\
+...
+\end{itemize}
+
 
 \section{Results}
 \section{Bibliography}
