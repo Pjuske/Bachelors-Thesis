@@ -1,19 +1,16 @@
 #include <iostream>
 #include <stdlib.h>
 #include "dijkstra.h"
+#include "relaxation.h"
 using namespace std;
 
 
 char alphabet[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 
 int add_vertices(vertex graph[], int amount){
-	int i;
-	
-
-	for (i = 0; i < amount; i++){
+	for (int i = 0; i < amount; i++){
 		graph[i].name  = alphabet[i];
 	}
-
 	return 0;
 }
 
@@ -32,9 +29,11 @@ int add_edge(vertex graph[], int src, int dst, int weight, int k_edges) {
 	return 0;
 }
 
-void initialize_single_source(){
-	return;
+void dijkstra(vertex graph[], int weight, vertex source){
+	initialize_single_source(graph, source);
+	vertex set[] = {};
 }
+
 
 
 int main(){

@@ -7,7 +7,8 @@ class edge;
 class vertex {
 public:
 	char name;
-	//int index;
+	int estimate;
+	vertex* predecessor;
 	edge* edges[];
 };
 
@@ -16,8 +17,6 @@ public:
 	int weight;
 	int source;
 	int destination;
-	//vertex source;
-	//vertex destination;
 };
 
 #endif
