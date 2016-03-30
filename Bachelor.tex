@@ -4,6 +4,7 @@
 \usepackage{graphicx} % \includegraphics
 \usepackage{tabto}
 \usepackage{enumerate}
+\usepackage{txfonts}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -48,7 +49,7 @@
 \newpage
 \section{Introduction}
 It is widely known that it can be time-consuming to choose the wrong path, if you want to travel from one city to another. It will most certainly be faster to aboard the train from Chicago to Seattle, rather than going through Los Angeles before heading to Seattle. Choosing the right path will therefore save a lot of time.\\
-For computersystems to choose such a path, they'd need a method for calculating such, an algorithm.\\
+The problem herein is that its in lots of cases is nowhere intuitive which path that guarantees the consumation of time to be minimal. We probably can't withstand the big amounts of information if we should compute the shortest path, through millions of combinations by ourselves. For computersystems to choose such a path, they'd need a method for calculating such, an algorithm.\\
 Different shortest-path algorithms are known to solve such problems theoretically. We'll examine the theory behind these, and analyse the complexity to see whether the time-complexity given by Bellmann-Ford and Dijkstras algorithms holds in real life implementations, by implementing them with both a binary and a fibonacci-heap in C++, thus finally to match them all up against each other.\\
 We'll as well analyse and implement the A*-algorithm to see how well dijkstra match up against this on euclidean planar graphs. Since we're primarily interested in road-maps, we won't consider negative weights.\\
 
@@ -60,7 +61,7 @@ In the shortest path problem, a graph $G = (V,E)$ is given, where $V$
 is the set of vertices, and $E$ is the set of edges. Each edge
 connects two vertices and contains a weight, indicating the cost of
 moving between these vertices. By using a shortest path algorithm, we
-can find a shortest path $P = {v_{1}, v_{2}, ..., v_{n}} \in V$ from a
+can find a shortest path $P = {v_{1}, v_{2}, ..., v_{n}} \in V$ from a
 given source vertex $s \in V$ to all other vertices $v \in V$. I.e.,
 we want to find a path, where the total weight of the visited edges is
 minimal.\\
@@ -85,7 +86,28 @@ vertex $v \in V$. At first, $v.d$ will be an overestimate, but if we see that th
 \noindent
 (Dry run relaxation of an edge? One in which a shortest- path estimate decreases and one in which no estimate changes... -> see pg. 649)\\
 
+\section{Proving the correctness of shortest path algorithms}
+The shortest path algorithms that we have talked about will always find a shortest path, if it exists. This can be proved by looking at the properties that shortest paths and relaxation have:\footnote{Introduction to Algorithms, pg. 650}
 
+\begin{itemize}
+\item \textbf{Triangle inequality}\\
+The triangle inequality lemma is a geometric property of triangles which states that the sum of two lengths of any two sides must be greater than or equal to the remaining side. That is, for any triangle with sides $\{x,y,z\}$, we have that $z \leq x+y$.\\\\
+Applied to the shortest path problem we have that for any edge $(u,v) \in E$, we have $\delta(s,v)\leq \delta(s,u) + w(u,v)$ (\textbf{Lemma 1}). Thus the shortest path from s to v must be less than or equal to the shortest path from s to u added to the weigth from u to v.\\
+\item \textbf{Upper-bound property}\\
+The upper-bound property says that our estimate for the shortest distance to v is always greater than or equal to the actual shortest path from s to v, for all vertices v$\in$ V.\\\\
+That is $\forall v \in V.(d[v]\geq \delta(s,v))$. Once our estimate holds the actual value for the shortest path, the estimate never changes (\textbf{Lemma 2}).\\
+\item \textbf{No-path property (\textbf{Corollary to Lemma 2})}\\
+If there is no path from s to v, then we always have $d[v] = \delta(s,v) = \infty$.\\
+\item \textbf{Convergence property}\\
+The convergence property ensures us that if we from s, at sometime has u to v is the shortest path in G for some u,v $\in$ V, and if the estimated shortest path to u actually is the shortest path, we'd then have (prior to relaxing the edge (u,v)) that the estimated shortest path to v must be the shortest path to v at all times afterward.\\\\
+That is, if $s\rightsquigarrow u\rightarrow v$ is a shortest path, and if $d[u] = \delta(s,u)$, then $d[v] = \delta(s,v)$ is assured at all time afterward (\textbf{Lemma 3}).\\
+\item \textbf{Path-relaxation property}\\
+Our path-relaxation property ensures that the relaxation of a shortest path p will derive that the distance to the k'th vertix in p is equal to the shortest path to vertix k.\\\\
+Let $p = \{v_{1}, v_{2},\cdots ,v_{k}\}$ be a shortest path that goes from $v_{1}$ to $v_{k}$. If the edges are relaxed in the order $(v_{1},v_{2}), (v_{2},v_{3}), \cdots , (v_{k-1}, v_{k})$, then $d[v_{k}] = \delta(s,v_{k})$ once the whole path is relaxed \footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT}(\textbf{Lemma 4}).\\
+\item \textbf{Predecessor-subgraph property}\\
+The predecessor-subgraph/parent-subgraph property ensures that once the shortest path to v is computed for all vertices v, the predecessor subgraph is a shorted-paths tree rooted at s.\\\\
+Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph that contains all the vertices with a finite distance from s, but with only edges that connects v to $\pi[v]$ is a shortest-path tree\footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT} (\textbf{Lemma 5}).
+\end{itemize}
 \section{Bellmann-Ford algorithm}
 ...\\
 
@@ -132,23 +154,7 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 
 \section{A* search}
 ...\\
-\section{Proving the correctness of shortest path algorithms}
-The shortest path algorithms that we have talked about will always find a shortest path, if it exists. This can be proved by looking at the properties that shortest paths and relaxation have:\footnote{Introduction to Algorithms, pg. 650}
 
-\begin{itemize}
-\item \textbf{Triangle inequality}\\
-...
-\item \textbf{Upper-bound property}\\
-...
-\item \textbf{No-path property}\\
-...
-\item \textbf{Convergence property}\\
-...
-\item \textbf{Path-relaxation property}\\
-...
-\item \textbf{Predecessor-subgraph property}\\
-...
-\end{itemize}
 
 
 \section{Results}
