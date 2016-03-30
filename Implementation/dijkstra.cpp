@@ -32,8 +32,16 @@ int add_edge(vertex graph[], int src, int dst, int weight, int k_edges) {
 void dijkstra(vertex graph[], int weight, vertex source){
 	initialize_single_source(graph, source);
 	vertex set[] = {};
-}
 
+	//Set the min-priority queue equal to the set of vertices V.
+	//Change this?
+	vertex *min_queue = graph;
+
+	//while Q != Ø
+	while (sizeof(min_queue) != 0) {
+		//vertex u = EXTRACT_MIN(min_queue)
+	}
+}
 
 
 int main(){
