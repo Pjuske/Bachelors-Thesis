@@ -56,12 +56,23 @@ We'll as well analyse and implement the A*-algorithm to see how well dijkstra ma
 \section{Problem definition}
 To examine and benchmark the complexity of different shortest-path algorithms, e.g. Dijkstra, Bellmann-Ford, and A* Search. We will do this by implementing and comparing them using different data structures and libraries. Finally we will compare the results of these experiments with the theoretical bounds.
 
+\section{Notation}
+A short list of notations used throughout the thesis:\\
+\begin{itemize}
+\item $G(V,E)$ = Graph, consisting of set of vertices V, and set of edges E
+\item $s$ = Designated to be the source vertex s
+\item $w(u,v)$ = Weighted distance from vertix u to v
+\item $d[v]$ = The weigth of the current shortest path from s to v. $d[v]$ is initlized to be $\infty$ for all vertices besides the source vertex. $d[s]$ is initialized to be 0.
+\item $\pi[v]$ = Predecessor/parent vertex to v in the current shortest path. $\pi[v]$ is initialized to be NIL. This is set to a vertex once/if a path is discovered from s to v.
+\item $\delta(u,v)$ = the weigth of the shortest path from u to v.
+ 
+\end{itemize}
 \section{On Shortest Paths}
-In the shortest path problem, a graph $G = (V,E)$ is given, where $V$
+In the shortest path problem, a graph $G = (V,E)$ is given, where $V$	
 is the set of vertices, and $E$ is the set of edges. Each edge
 connects two vertices and contains a weight, indicating the cost of
 moving between these vertices. By using a shortest path algorithm, we
-can find a shortest path $P = {v_{1}, v_{2}, ..., v_{n}} \in V$ from a
+can find a shortest path $P = {v_{1}, v_{2}, ..., v_{k}} \in V$ from a
 given source vertex $s \in V$ to all other vertices $v \in V$. I.e.,
 we want to find a path, where the total weight of the visited edges is
 minimal.\\
@@ -69,17 +80,17 @@ minimal.\\
 \noindent
 \textbf{Relaxation}\\
 When searching for the shortest path from a source vertex $s$ to a
-vertex $v$, a shortest-path estimate $v.d$ is preserved for each
-vertex $v \in V$. At first, $v.d$ will be an overestimate, but if we see that the shortest path to $v$ can be improved by going through a vertex $u$, we update the estimate $v.d$ with the new and lower cost. As better paths are found, we will eventually get the correct estimate and find the shortest path, if it exists. This technique is called relaxation and is used by the three algorithms that we will talk about later. The pseudocode for relaxing an edge $(u,v) $ is shown below:\footnote{Introduction to Algorithms, pg. 649}\\
+vertex $v$, a shortest-path estimate $d[v]$ is preserved for each
+vertex $v \in V$. At first, $d[v]$ will be an overestimate, but if we see that the shortest path to $v$ can be improved by going through a vertex $u$, we update the estimate $d[v]$ with the new and lower cost. As better paths are found, we will eventually get the correct estimate and find the shortest path, if it exists. This technique is called relaxation and is used by the three algorithms that we will talk about later. The pseudocode for relaxing an edge $(u,v) $ is shown below:\footnote{Introduction to Algorithms, pg. 649}\\
 
 %\noindent
 \textbf{RELAX$(u, v, w)$}
 \begin{enumerate}
 \NumTabs{24}
 \setlength\itemsep{0em}
-\item \textbf{if } $v.d > u.d + w(u,v)$
-\item \tab{$v.d = u.d + w(u,v)$}
-\item \tab{$v.\pi = u$}
+\item \textbf{if } $d[v] > d[u] + w(u,v)$
+\item \tab{$d[v] = d[u] + w(u,v)$}
+\item \tab{$\pi[v] = u$}
 \end{enumerate}
 (explain the pseudocode :) )\\
 
@@ -110,15 +121,15 @@ Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph t
 \end{itemize}
 \section{Bellmann-Ford algorithm}
 ...\\
-
+If there is a negative cycle, the cost of the shortest path is decreased every time the algorithm runs through the negative cycle. By doing this numerous times, we can receive arbitrarily negative weights, thus making the cost undefined.
 \section{Dijkstra's algorithm}
-Dijkstra's algorithm takes a weighted graph $G = (V, E)$ and finds the shortest path from a single source to a single target.\\   
+DER SKAL FORKLARES OM HOBS OG SÅDAN NOGET!
+Dijkstra's algorithm takes a weighted graph $G = (V, E)$ and finds the shortest path from a single source to each other vertex in the graph.\\   
 
 \noindent
 \textbf{Assumptions}\\
-For Dijkstra's algorithm to work, we must assume that the graph contains no negative weights or cycles. If there is a negative cycle, the cost of the shortest path is decreased every time the algorithm runs through the negative cycle. By doing this numerous times, we can receive arbitrarily negative weights, thus making the cost undefined. 
+For Dijkstra's algorithm to work, we must assume that the graph contains no negative weights. If there is a negative-weighted edge somewhere, the algorithm may find a wrong shortest-path as it won't necesarrily visit to relax the negative edge. This is due to dijkstra utilizing the greedy property of \textbf{Lemma 1}, thus that $\forall (u,v) \in E.(w(u,v) \geq 0)$
 
-(should we prove that if we move forward, the weight should not become smaller?)\\\\
 
 \noindent
 (\textbf{Does the graph have to be connected???}\\
