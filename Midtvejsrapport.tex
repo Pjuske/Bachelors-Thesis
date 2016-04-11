@@ -5,6 +5,7 @@
 \usepackage{tabto}
 \usepackage{enumerate}
 \usepackage{txfonts}
+\usepackage[utf8]{inputenc}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -15,7 +16,7 @@
 
 \title{
   \vspace{3cm}
-  \Huge{Some Title} \\
+  \Huge{Midtvejsrapport} \\
   \Large{More elaborate subtitle}
 }
 
@@ -41,7 +42,64 @@
 \thispagestyle{empty}
 
 \newpage
+\section{Beskrivelse af det undersøgte problem}
+Problemet er undersøgt ved at analysere, diskutere via. matematiske udledninger og argumenter, samt ved at implementere ngole af de egenskaber samt algoritmer der er relevante inden for Dijkstra, Bellmann Ford samt A*.
+\section{Begrundede valg for metoder og værktøjer}
+I og med at der særligt arbejdes med algoritmik er der af metode benyttet særligt matematisk deduktiv metode, hvoraf der ved præmisser og matematiske/geometriske lemmaer kan argumenteres til at nå en konklusion.\\
+Af værktøjer er der brugt sproget C++ med dens tilhørende oversætter.\\
+\section{Status og tidsplan}
+\textbf{Indtil nu, har vi nået følgende:}\\
+\begin{itemize}
+\item 2. udkast af 'Introduction'
+\item 'Problem definition'
+\item 1. udkast af 'Notation'
+\item 1. halvdel af 'On Shortest Paths'-afsnittet
+\item 1. udkast til 'Proving correctness of shortest path algortihms'
+\item 1. halvdel af 'Dijkstras algorithm'-afnsnittet
+\item Startet på implementeringer
+\end{itemize}
+\textbf{Der mangler fortsat følgende:}\\
+\begin{itemize}
+\item 2. halvdel af 'On Shortest Paths'
+\item 2. halvdel af 'Dijkstras algortihm'
+\item Bellmann Ford
+\item A*-star (Der er dog indtil nu gjordt mange teoretiske overvejelser om denne)
+\item Implementering
+\end{itemize}
+\newpage
+\textbf{Løs tidsplan:}\\
+\begin{itemize}
+\item 17. April: Implementering + Rapport
+\item 24. April: Implementering + Rapport
+\item 31. April: Implementering + Rapport
+\item ...
+\item Slut maj: Endelig rapport + benchmarking
+\item 13. Juni: Aflevering af rapport
+\item 22-23. Juni: Forsvar
+\end{itemize}
+\section{Relevant literature}
+\begin{itemize}
+\item Nils J. Nilsson, \textit{Principles of Artificial Intelligence}, Stanford University, Morgan Kaufmann Publishers, Inc. 1980
 
+\item Cormen, T. H., Leiserson, C. E., Rivest, R. L., Stein, C., \textit{Introduction to Algorithms}, 3rd edition, MIT Press, 2009
+
+\item E. W. Dijkstra, \textit{A Note on Two Problems in Connexion with Graphs}, \\ http://www-m3.ma.tum.de/foswiki/pub/MN0506/WebHome/dijkstra.pdf, 1959
+
+\item Melissa Yan, \textit{Dikjkstra's algorithm (slides)}, \\ http://math.mit.edu/~rothvoss/18.304.3PM/Presentations/1-Melissa.pdf, 2014
+
+\item Amit J Patel, \textit{Introduction to A*}, \\ http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html, 2016
+
+\item Nick Bruun, \textit{Easy C++ benchmarking}, \\ https://bruun.co/2012/02/07/easy-cpp-benchmarking, 2012
+
+\item \textit{Shortest Paths: 6.006 Intro to Algorithms, Recitation 14. MIT}, \\ http://courses.csail.mit.edu/6.006/spring11/rec/rec14.pdf,  March 30 2011
+
+\item Ashley Montanaro, \textit{COMS21103: Priority queues and Dijkstra’s algorithm}, University of Bristol \\ https://www.semanticscholar.org/paper/Priority-Queues-and-Dijkstra-s-Algorithm-Montanaro/8211695142f5178afed318dbd77fe688022fa7cf, 29 October 2013
+\end{itemize}
+\newpage
+\begin{center}
+\Huge{FORELØBIG RAPPORT}
+\end{center}
+\newpage
 %% Write your dissertation here.
 \section{Abstract}
 \newpage
@@ -161,6 +219,25 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 \noindent
 \\
 (write explanation of pseudocode and dry run an example? :))
+
+
+We are only interested in finding a single target, so we have modified the original pseudocode for Dijkstra's algorithm:\\ 
+\textbf{MODIFIED-DIJKSTRA$(G, w, s, t)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item INITIALIZE-SINGLE-SOURCE$(G, s)$
+\item $S = Q = {s}$
+\item $\textbf{while } Q \neq \O$
+\item \tab{$u = $ EXTRACT-MIN$(Q)$}
+\item \tab{\textbf{if ko ko ko}}
+\item \tab{$S = S \cup \{u\}$}
+\item \tab{\textbf{for} each vertex $v \in G.Adj[u]$}
+\item \tab{}\tab{RELAX$(u,v,w)$}
+\end{enumerate}
+
+The pseudocode now also takes a parameter $t$, indicating the target we want to find. 
+
 
 
 \section{A* search}
