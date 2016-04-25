@@ -87,9 +87,20 @@ minimal.\\
 \textbf{Relaxation}\\
 When searching for the shortest path from a source vertex $s$ to a
 vertex $v$, a shortest-path estimate $d[v]$ is preserved for each
-vertex $v \in V$. At first, $d[v]$ will be an overestimate, but if we see that the shortest path to $v$ can be improved by going through a vertex $u$, we update the estimate $d[v]$ with the new and lower cost. As better paths are found, we will eventually get the correct estimate and find the shortest path, if it exists. This technique is called relaxation and is used by the three algorithms that we will talk about later. The pseudocode for relaxing an edge $(u,v) $ is shown below:\footnote{Introduction to Algorithms, pg. 649}\\
+vertex $v \in V$. To initialize the estimate and predecessor for all vertices, the following function is used:\\
 
-%\noindent
+\textbf{INITIALIZE-SINGLE-SOURCE$(G, s)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item \textbf{for } each vertex $v \in G.V$
+\item \tab{$d[v] = \infty$}
+\item \tab{$\pi[v] = NIL$}
+\item $d[s] = 0$
+\end{enumerate}
+The shortest-path estimate for the source is 0, since this is where the algorithm begins. The other vertices' distance is set to $\infty$, since the path from $s$ to a vertex $v$ is unknown at start. Not knowing the path also results in the predecessor being unknown, which is why $\pi[v]$ is set to NIL.\\
+At first, $d[v]$ will be an overestimate, but if we see that the shortest path to $v$ can be improved by going through a vertex $u$, we update the estimate $d[v]$ with the new and lower cost. As better paths are found, we will eventually get the correct estimate and find the shortest path, if it exists. This technique is called relaxation and is used by the three algorithms that we will talk about later. The pseudocode for relaxing an edge $(u,v) $ is shown below:\footnote{Introduction to Algorithms, pg. 649}\\
+
 \textbf{RELAX$(u, v, w)$}
 \begin{enumerate}
 \NumTabs{24}
@@ -98,10 +109,14 @@ vertex $v \in V$. At first, $d[v]$ will be an overestimate, but if we see that t
 \item \tab{$d[v] = d[u] + w(u,v)$}
 \item \tab{$\pi[v] = u$}
 \end{enumerate}
-(TODO: Explain the pseudocode )\\
+If the current distance from a source to the vertex $v$ is larger than the path going through vertex $u$ to $v$, the estimate is updated. And the predecessor for $v$ will then be $u$. The figure below illustrates the procedure of relaxing an edge $(u,v)$. Before relaxing the edge, we have that $d[v] > d[u] + w(u,v)$. $d[v]$ therefore gets decreased. Had the condition not been true, $d[v]$ would have remained at the same value of 10. 
 
-\noindent
-(Dry run relaxation of an edge? One in which a shortest- path estimate decreases and one in which no estimate changes... -> see pg. 649)\\
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{relaxation.png}
+\caption{Relaxing an edge $(u,v)$}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proving the correctness of shortest path algorithms}
@@ -127,6 +142,20 @@ The predecessor-subgraph/parent-subgraph property ensures that once the shortest
 Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph that contains all the vertices with a finite distance from s, but with only edges that connects v to $\pi[v]$ is a shortest-path tree\footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT} (\textbf{Lemma 5}).
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra proof %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Proving the correctness of Dijkstra's algorithm}\\
+To prove that Dijkstra's algorithm work, we will perform an induction proof.\\\\
+\textbf{Loop Invariant}\\
+$\forall u.$ EXTRACT-MIN(Q) $\to (d[u] = \delta(s,u))$\\\\
+\textbf{Initialization}\\
+$S = Q = \{s\}$. Thus invariant holds since EXTRACT-MIN(Q) = $s$.\\\\
+\textbf{Maintenance}\\
+We wish to show that for each iteration, our loop invariant holds. Upon extracting the minimum from Q, we do MIN-HEAPIFY which ensures that for each vertex $V$ in $Q$, we have that the node $Q.L \geq Q.v \leq G.R$\\\\
+Assume that the min-heap always extracts a vertex $u$ with the shortest-path estimate. Thus, if we decompose the path $p$ into $s \rightsquigarrow y \to u$, we have that $d[y] = \delta(s,y)$. From the convergence property, this means that $d[u] = $\delta(s,y) + w(y,u)$.\\\\
+The invariant holds since $u =$ EXTRACT-MIN(Q) thus that $d[u] = \delta(s,u)$.\\\\
+\textbf{Termination}\\
+We terminate once either $Q = \O$ or if we found $t$. If $\exists t \in S$, we can backtrace the predecessors to obtain $\delta(s,t)$. Otherwise, we have that $\delta(s,t) = \infty$ by the no-path property.\\
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bellman-Ford %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bellmann-Ford algorithm}
 ...\\
@@ -137,8 +166,9 @@ See: http://stackoverflow.com/questions/20123076/can-dijkstras-single-source-sho
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heaps %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Min heaps}
-In the following section, we will describe min heaps that Dijkstra's algorithm takes in use...\\
-DER SKAL FORKLARES OM HOBS OG SÅDAN NOGET!
+In the following section, we will describe min heaps that Dijkstra's  and A* search algorithm takes in use...\\
+\subsection{Binary Min-Heaps}
+\textbf{HVIS DER ER TID TIL DET SKAL DER OGSÅ FORKLARES FIB-HEAPS}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dijkstra's algorithm}
@@ -179,7 +209,9 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 \item \tab{}\tab{RELAX$(u,v,w)$}
 \end{enumerate}
 
-\noindent (TO DO: explain the pseudocode and dry run an example)\\
+\noindent The graph is initialized in line 1 by calling $INITIALIZE-SINGLE-SOURCE$. The function 
+
+(TO DO: explain the pseudocode)\\
 
 
 
@@ -210,7 +242,8 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 \end{enumerate}
 
 \noindent The pseudocode now takes a 4th parameter $t$, indicating the target vertex we want to find. Instead of calling the function \textit{INITIALIZE-SINGLE-SOURCE}, we only set the source's shortest-path estimate to 0. All other vertices are already assumed to have a shortest-path estimate equal to $\infty$, so it is not necessary to initialize the estimates to $\infty$.\\
-The set $S$ still contains the set of vertices whose optimal shortest-path estimates have been determined. At start, only the final estimate is known for the source vertex $s$ (line 2). The min-priority queue Q has also been modified to contain $\{s\}$, since we only want to insert new vertices into the queue, as they are discovered. Line 4 extracts a vertex $u$ with the minimum shortest-path estimate. If the vertex $u$ is the target vertex, the algorithm terminates. Else, the algorithm examines each vertex $v$ that is adjacent to $u$ in line 7. If $v$ has not been examined before, it will not be an element of $S$, since the shortest-path estimate is still $\infty$ and need to be relaxed...
+
+The set $S$ contains the vertices that have been visited, but only the path leading to the target vertex $p = \langle v_0, v_1, \cdots, v_k\rangle$ will with certainty contain the shortest path estimates. At start, only the final estimate is known for the source vertex $s$ (line 2). The min-priority queue Q has also been modified to contain $\{s\}$, since we only want to insert new vertices into the queue, as they are discovered. Line 4 extracts a vertex $u$ with the minimum shortest-path estimate. If the vertex $u$ is the target vertex, the algorithm terminates. Else, the algorithm examines each vertex $v$ that is adjacent to $u$ in line 7. If $v$ has not been examined before, it will not be an element of $S$, since the shortest-path estimate is still $\infty$ and need to be relaxed...
 
 
 
@@ -221,23 +254,22 @@ From the convergence property... something with adding w(u,v) will give the opti
 
 To move onwards from vertex $v$, the vertex must also be inserted into the min-priority queue $Q$ in line 10.
 
+%In your modified Dijkstra, the set S plays a very different role. It is the set of vertices v for which we have considered a path to v... that is, for some vertex u, we extracted u and relaxed the edge (u,v). Basically, V-S is exactly the set of vertices that in the original Dijkstra would have d[v]=infinity.
 
 
 
-\noindent Figure 1 illustrates the difference between the two algorithms.\\
-\begin{figure}
+\noindent The following figure illustrates the difference between the two algorithms.\\
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{dijkstra.png}
 \caption{Dijkstra's algorithm vs. the modified Dijkstra's algorithm}
 \end{figure}
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% A* search %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A* search}
 ...\\
-
+Goal is to minimize the number of vertices visited, before the target vertex is found.
 
 
 \section{Results}
