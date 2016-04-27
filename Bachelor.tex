@@ -143,7 +143,8 @@ Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph t
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra proof %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\textbf{Proving the correctness of Dijkstra's algorithm}\\
+\newpage
+\noindent\textbf{Proving the correctness of Dijkstra's algorithm:}\\
 To prove that Dijkstra's algorithm work, we will perform an induction proof.\\\\
 \textbf{Loop Invariant}\\
 $\forall u.$ EXTRACT-MIN(Q) $\to (d[u] = \delta(s,u))$\\\\
@@ -151,7 +152,7 @@ $\forall u.$ EXTRACT-MIN(Q) $\to (d[u] = \delta(s,u))$\\\\
 $S = Q = \{s\}$. Thus invariant holds since EXTRACT-MIN(Q) = $s$.\\\\
 \textbf{Maintenance}\\
 We wish to show that for each iteration, our loop invariant holds. Upon extracting the minimum from Q, we do MIN-HEAPIFY which ensures that for each vertex $V$ in $Q$, we have that the node $Q.L \geq Q.v \leq G.R$\\\\
-Assume that the min-heap always extracts a vertex $u$ with the shortest-path estimate. Thus, if we decompose the path $p$ into $s \rightsquigarrow y \to u$, we have that $d[y] = \delta(s,y)$. From the convergence property, this means that $d[u] = $\delta(s,y) + w(y,u)$.\\\\
+Assume that the min-heap always extracts a vertex $u$ with the shortest-path estimate. Thus, if we decompose the path $p$ into $s  \rightsquigarrow y \to u$, we have that $d[y] = \delta(s,y)$. From the convergence property, this means that $d[u] = \delta(s,y) + w(y,u)$.\\\\
 The invariant holds since $u =$ EXTRACT-MIN(Q) thus that $d[u] = \delta(s,u)$.\\\\
 \textbf{Termination}\\
 We terminate once either $Q = \O$ or if we found $t$. If $\exists t \in S$, we can backtrace the predecessors to obtain $\delta(s,t)$. Otherwise, we have that $\delta(s,t) = \infty$ by the no-path property.\\
@@ -167,7 +168,7 @@ See: http://stackoverflow.com/questions/20123076/can-dijkstras-single-source-sho
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heaps %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Min heaps}
 In the following section, we will describe min heaps that Dijkstra's  and A* search algorithm takes in use...\\
-\subsection{Binary Min-Heaps}
+\subsection{Binary Min-Heaps}fdsas
 \textbf{HVIS DER ER TID TIL DET SKAL DER OGSÅ FORKLARES FIB-HEAPS}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +193,7 @@ A connected graph means that for all $v \in V $,a vertex $v$ will be reachable f
 
 
 \noindent
-\textbf{How Dijkstra's algorithm work}:\\
+\textbf{How Dijkstra's algorithm works}:\\
 The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction to Algorithms, pg. 658}\\
 
 \textbf{DIJKSTRA$(G, w, s)$}
@@ -209,15 +210,8 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 \item \tab{}\tab{RELAX$(u,v,w)$}
 \end{enumerate}
 
-\noindent The graph is initialized in line 1 by calling $INITIALIZE-SINGLE-SOURCE$. The function 
-
-(TO DO: explain the pseudocode)\\
-
-
-
-
-
-
+\noindent The graph is initialized in line 1 by calling INITIALIZE-SINGLE-SOURCE. For each vertex $v \in G.V$, the function sets the shortest-path estimate to $\infty$ and predecessor to NIL. $d[s]$ is set to 0. Dijkstra's algorithm maintains two sets, $S$ and $Q$. The set $S$ contains the vertices, whose final shortest-path estimates have been determined. In the beginning, no paths have been determined and thus $S$ will be empty (line 2). The min-priority queue $Q$ contains the vertices, whose shortest paths have not been found yet and is keyed by the vertices' current shortest-path estimates. In other words, the set of vertices in the graph is equal to the two sets, $V = S + Q$. $Q$ will contain all vertics in the graph at start (line 3).\\
+We want to find $d[v]$ for all vertices, so Dijkstra's algorithm runs until the priority queue is empty. While $Q$ is not empty, the algorithm extracts the vertex with lowest $d[v]$ from $Q$ and adds it to the set $S$ (line 4 to 6). Afterwards, we examine for each vertex $v$ adjacent to $u$ if the shortest path found so far can be enhanced by taking the path through $u$. This is done by relaxing the edge $(u,v)$ (line 7 to 8).\\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra  modified %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,24 +235,10 @@ The pseudocode for Dijkstra's algorithm can be seen below:\footnote{Introduction
 \item \tab{}\tab{}\tab{$\pi[v] = u$}
 \end{enumerate}
 
-\noindent The pseudocode now takes a 4th parameter $t$, indicating the target vertex we want to find. Instead of calling the function \textit{INITIALIZE-SINGLE-SOURCE}, we only set the source's shortest-path estimate to 0. All other vertices are already assumed to have a shortest-path estimate equal to $\infty$, so it is not necessary to initialize the estimates to $\infty$.\\
-
-The set $S$ contains the vertices that have been visited, but only the path leading to the target vertex $p = \langle v_0, v_1, \cdots, v_k\rangle$ will with certainty contain the shortest path estimates. At start, only the final estimate is known for the source vertex $s$ (line 2). The min-priority queue Q has also been modified to contain $\{s\}$, since we only want to insert new vertices into the queue, as they are discovered. Line 4 extracts a vertex $u$ with the minimum shortest-path estimate. If the vertex $u$ is the target vertex, the algorithm terminates. Else, the algorithm examines each vertex $v$ that is adjacent to $u$ in line 7. If $v$ has not been examined before, it will not be an element of $S$, since the shortest-path estimate is still $\infty$ and need to be relaxed...
-
-
-
-
-linje 9-12...
-From the properties of Dijkstra's, we have that $d[u] = \delta(s,u)$. 
-From the convergence property... something with adding w(u,v) will give the optimal d[v]. 
-
-To move onwards from vertex $v$, the vertex must also be inserted into the min-priority queue $Q$ in line 10.
-
-%In your modified Dijkstra, the set S plays a very different role. It is the set of vertices v for which we have considered a path to v... that is, for some vertex u, we extracted u and relaxed the edge (u,v). Basically, V-S is exactly the set of vertices that in the original Dijkstra would have d[v]=infinity.
-
-
-
-\noindent The following figure illustrates the difference between the two algorithms.\\
+\noindent The pseudocode now takes a 4th parameter $t$, indicating the target vertex we want to find. Instead of calling the function \textit{INITIALIZE-SINGLE-SOURCE}, we only set the source's shortest-path estimate to 0. All other vertices are already assumed to have a shortest-path estimate equal to $\infty$, so it is not necessary to initialize the estimates to $\infty$.\\\\
+The set $S$ no longer contains the vertices, whose final shortest-path estimates have been found. Instead, the set $S$ now consists of vertices $v$ for which a path to $v$ has been considered. By subtracting $S$ from $V$, we would get the set of vertices where $d[v]=\infty$ in the original Dijkstra's algorithm. The min-priority queue $Q$ has also been modified. Instead of adding all vertices in the graph, we only want to insert new vertices into the queue as they are discovered.\\ 
+At start, $s$ is added to the sets $S$ and $Q$, since only the path to the source has been discovered and considered (line 2). Line 4 extracts a vertex $u$ with the minimum shortest-path estimate. If the vertex $u$ is the target vertex, the algorithm terminates. Else, the algorithm examines each vertex $v$ that is adjacent to $u$ in line 7. If $v$ has not been examined before, it will not be an element of $S$ or $Q$. Thus, we add $v$ to $S$ and $Q$. After this, the edge $(u,v)$ is relaxed, since $d[v]=\infty$ prior to being found and the predecessor is set to $u$.\\\\
+The following figure illustrates the difference between the two algorithms.\\
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{dijkstra.png}
@@ -268,8 +248,30 @@ To move onwards from vertex $v$, the vertex must also be inserted into the min-p
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% A* search %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A* search}
-...\\
-Goal is to minimize the number of vertices visited, before the target vertex is found.
+Our goal with A* search is to minimize the number of vertices visited, before the target vertex is found.\\\\
+\textbf{How A* search algorithm works}:\\
+We wish to find the shortest path to a single target, so the pseudocode is based on the pseudocode for the modified Dijkstra's algorithm.\\
+
+\textbf{A* Search$(G, w, s)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item $d[s] = 0$
+\item $S = Q = \{s\}$
+\item \textbf{for} each vertex $v \in G.V$
+\item \tab{INCREASE-KEY$(Q, v, d[v] + \|t-v\| )$}
+\item $\textbf{while } Q \neq  $ \O
+\item \tab{$u = $ EXTRACT-MIN$(Q)$}
+\item \tab{\textbf{if } $u = t$}
+\item \tab{}\tab{\textbf{Terminate}}
+\item \tab{\textbf{for} each vertex $v \in G.Adj[u]$}
+\item \tab{}\tab{\textbf{if } $v \notin S$}
+\item \tab{}\tab{}\tab{$S = S \cup \{v\}$}
+\item \tab{}\tab{}\tab{$Q = Q \cup \{v\}$}
+\item \tab{}\tab{}\tab{$d[v]  = d[u] + w(u,v)$}
+\item \tab{}\tab{}\tab{$\pi[v] = u$}
+\end{enumerate}
+The difference is now that we also use heurestics to guide our search. Recall that Dijkstra's algorithm selects which vertex to visit next, by extracting the vertex with the lowest shortest-path estimate. For A* search, we also want to examine the Euclidean distance from a vertex $v$ to the target vertex $t$ for all vertices, $\|t-v\|$. Thus, A* search will maintain a min-priority queue $Q$, where vertices are keyed by $d[v]+\|t-v\|$. By repeatedly selecting the vertex with the lowest sum, we can get a more precise path search. This is illustrated on the following figure: ...\\
 
 
 \section{Results}
