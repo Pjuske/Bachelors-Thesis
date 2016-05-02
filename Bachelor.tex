@@ -7,7 +7,7 @@
 \usepackage{txfonts}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{amsmath}
+%\usepackage{amsmath}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -211,7 +211,7 @@ We run our Decrease-Key again to have our new node have the right place in the M
 \item DECREASE-KEY(Min-Heap, \textbf{Size}(Min-Heap), key)
 \end{enumerate}
 We can in the ordinary Dijkstras algorithm do this in a more clever way which will be discussed in the '\textbf{Running time analysis}'-section
-\subsubsection{Extract-Min}\\
+\subsubsection{Extract-Min}
 By calling our \textbf{Extract-Min} we take out the Min-Heap[1], which is the root of our Min-Heap and will be guaranteed by Insert and Decrease-Key to have the minimum-value. When we do this, we put up our terminal node in the root, decreases the heap-size by 1 and balances it by swapping it with the smallest child-node recursively until we have it in the right spot.\\\\
 \textbf{BALANCE-MIN-HEAP(Min-Heap, i)}
 \begin{enumerate}
@@ -314,7 +314,7 @@ At start, $s$ is added to the sets $S$ and $Q$, since only the path to the sourc
 The following figure illustrates the difference between the two algorithms.\\
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{dijkstra.png}
+\includegraphics[scale=0.5]{dijkstra.jpg}
 \caption{Dijkstra's algorithm vs. the modified Dijkstra's algorithm}
 \end{figure}
 
