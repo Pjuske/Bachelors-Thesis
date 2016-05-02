@@ -1,7 +1,10 @@
 #include <iostream>
 #include <stdlib.h>
+#include <assert.h>
 #include "dijkstra.h"
 #include "relaxation.h"
+#include "minheap.h"
+
 using namespace std;
 
 
@@ -14,36 +17,82 @@ int add_vertices(vertex graph[], int amount){
 	return 0;
 }
 
-int add_edge(vertex graph[], int src, int dst, int weight, int k_edges) {
+int add_edge(vertex graph[], vertex src, vertex dst, int weight) {
+	int i = 0;
+	//find the position of the src vertex in graph
+	//assumes that a vertex with the given name exists in graph.
+	while (graph[i].name != src.name){
+		i++;
+	}
 	//allocate memory for the edge
-	graph[src].edges[k_edges] = (edge*) malloc(sizeof(edge));
+	int e = sizeof(graph[i].edges) / sizeof(graph[i].edges[0]);
+	graph[i].edges[e] = (edge*) malloc(sizeof(edge));
 	
 	//add the edge with the respective src, dst, and weight values.
-	graph[src].edges[k_edges]->weight       =  weight;
-	graph[src].edges[k_edges]->source       =  src;
-	graph[src].edges[k_edges]->destination  =  dst;
-
-	//Update the index in the edges[] array
-	k_edges++;
+	graph[i].edges[e]->weight     =  weight;
+	graph[i].edges[e]->src   =  src;
+	graph[i].edges[e]->dest  =  dst;
 
 	return 0;
 }
 
-void dijkstra(vertex graph[], int weight, vertex source){
-	initialize_single_source(graph, source);
-	vertex set[] = {};
+//returns the weight of the edge between vertex u and v. 
+int edge_weight(vertex u, vertex v){
+	for (int i = 0; i < sizeof(u.edges); i++){
+		if (u.edges[i]->dest.name == v.name){
+			return u.edges[i]->weight;
+		}
+	}
+	//return error if there is no path between u and v.
+	return -1;
+}
 
-	//Set the min-priority queue equal to the set of vertices V.
-	//Change this?
-	vertex *min_queue = graph;
 
+//Return 1 if the shortest path to the given vertex has been found.
+int path_found(vertex closed_set[], vertex v){
+	for (int i = 0; i < sizeof(closed_set); i++){
+		if (closed_set[i].name == v.name){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+void dijkstra(vertex graph[], int weight, vertex source, vertex target){
+	//initialization
+	source.estimate = 0;
+	int n = 1;
+	vertex closed_set[sizeof(graph)] = {source};
+	vertex min_queue[sizeof(graph)]  = {source};
+	
 	//while Q != Ø
-	while (sizeof(min_queue) != 0) {
-		//vertex u = EXTRACT_MIN(min_queue)
+	while (sizeof(min_queue) > 0){
+		vertex u = extract_min(min_queue);
+		if (u.name = target.name) {
+			return;
+		}
+		//examine each vertex v adjacent to u
+		int edge_size = sizeof(u.edges) / sizeof(u.edges[0]);
+		for (int i = 0; i < edge_size; i++){
+			vertex v = u.edges[i]->dest;
+			if (!path_found(closed_set, v)){
+				//insert vertex v into S and Q
+				closed_set[n] = v;
+				min_queue[n]  = v;
+				
+				//update estimate and predecessor for v
+				assert(edge_weight(u,v) != -1);
+				v.estimate = u.estimate + edge_weight(u,v);
+				v.predecessor = &u;
+			}
+		}
 	}
 }
 
 
+
+/*
 int main(){
 	int amount = 4;
 	//int edge_number = 0;
@@ -60,13 +109,13 @@ int main(){
 	//add edges with weight 7 and 2 from vertex 0
 
 	//Den her graf er den vi talte om, du kan nemt tegne den (hhv. src-knude, dst-knude, vægt)
-	add_edge(graph, 0, 1, 7, 0);
-	add_edge(graph, 0, 2, 2, 1);
+	add_edge(graph, 'a', 'b', 7);
+	add_edge(graph, 'a', 'c', 2);
 
-	add_edge(graph, 1, 2, 1, 0);
-	add_edge(graph, 1, 3, 5, 1);
+	add_edge(graph, 'b', 'c', 1);
+	add_edge(graph, 'b', 'd', 5);
 	
-	add_edge(graph, 2, 3, 2, 0);
+	add_edge(graph, 'c', 'd', 3);
 	//cout << (sizeof(graph)/sizeof(graph[0])); Returns 4, which is the number of vertices in our graph
 	
 	for (int i = 0; i < ((sizeof(graph)/sizeof(graph[0]))-1); i++) //Print function for printing edges, does only print the first edge in each vertix though!
@@ -81,3 +130,8 @@ int main(){
 	return 0;
 } 
 
+*/
+
+int main(){
+	return 0;
+}

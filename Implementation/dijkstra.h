@@ -15,8 +15,8 @@ public:
 class edge {
 public:
 	int weight;
-	int source;
-	int destination;
+	vertex src;
+	vertex dest;
 };
 
 #endif
