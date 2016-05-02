@@ -7,6 +7,7 @@
 \usepackage{txfonts}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{amsmath}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -69,6 +70,8 @@ A short list of notations used throughout the thesis:
 \item $d[v]$ = The weigth of the current shortest path from s to v. $d[v]$ is initlized to be $\infty$ for all vertices besides the source vertex. $d[s]$ is initialized to be 0.
 \item $\pi[v]$ = Predecessor/parent vertex to v in the current shortest path. $\pi[v]$ is initialized to be NIL. This is set to a vertex once/if a path is discovered from s to v.
 \item $\delta(u,v)$ = the weigth of the shortest path from u to v.
+\item lg(n) = $log_{2}$(n).
+\item $v_{1}, v_{2}, ..., v_{k}$ a path from some start-vertice containing k vertices in successing order. 
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Shortest Paths %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,20 +145,25 @@ The predecessor-subgraph/parent-subgraph property ensures that once the shortest
 Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph that contains all the vertices with a finite distance from s, but with only edges that connects v to $\pi[v]$ is a shortest-path tree\footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT} (\textbf{Lemma 5}).
 \end{itemize}
 
+\includegraphics[scale=0.5]{grimtSP.png}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra proof %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \noindent\textbf{Proving the correctness of Dijkstra's algorithm:}\\
-To prove that Dijkstra's algorithm work, we will perform an induction proof.\\\\
+To prove that Dijkstra's algorithm work, we will perform an induction proof. Let $S$ be the set of vertices, whose shortest path have been found, $S=V-Q$.\\\\
 \textbf{Loop Invariant}\\
-$\forall u.$ EXTRACT-MIN(Q) $\to (d[u] = \delta(s,u))$\\\\
+$\forall v\in S.(d[v] = \delta(s,v))$\\\\
 \textbf{Initialization}\\
-$S = Q = \{s\}$. Thus invariant holds since EXTRACT-MIN(Q) = $s$.\\\\
+Let $\ell(S)=1$. This is true when S only holds the source vertex, $S = \{s\}$. Since $d[s]=0=\delta(s)$, the invariant holds.\\\\
 \textbf{Maintenance}\\
-We wish to show that for each iteration, our loop invariant holds. Upon extracting the minimum from Q, we do MIN-HEAPIFY which ensures that for each vertex $V$ in $Q$, we have that the node $Q.L \geq Q.v \leq G.R$\\\\
-Assume that the min-heap always extracts a vertex $u$ with the shortest-path estimate. Thus, if we decompose the path $p$ into $s  \rightsquigarrow y \to u$, we have that $d[y] = \delta(s,y)$. From the convergence property, this means that $d[u] = \delta(s,y) + w(y,u)$.\\\\
-The invariant holds since $u =$ EXTRACT-MIN(Q) thus that $d[u] = \delta(s,u)$.\\\\
+Let $v$ be the latest vertex added to $S$. Let $S'$ = $S \cup \{v\}$. For each vertex in $S'$, we want to have that our loop invariant holds. EXTRACT-MIN(Q) ensures that the correct distance label gets extracted from $Q$ and put into $S$. We therefore only need to show that $d[v]=\delta(s,v)$ for $S'=S \cup \{v\}$. To prove this, we will perform a contradiction. Assume that there exists a shortest path $P^{sv}=(v_s, v_2, ..., v_v)$ from the source vertex $s$ to target vertex $v$ that has length $$w(P^{sv}) < d[v]$$
+Before adding $v$ to $S$, the path $P^{sv}$ connects a vertex $u\in S$ to the vertex $v\in V-S$ through one or more edges. Let $y$ be the first vertex along $P^{sv}$ that is an element of $V-S$. Let $x\in S$ be $y's$ predecessor along the path $P^{sv}$. Let $P^{sx}=(v_s, v_2, ..., v_x)$ be a subpath of $P^{sv}$ from vertex $s$ to $x$. Once we want to add $v$ to $S$, we have already gone through the edge $(x,y)$: $$w(P^{sx}) + w(x,y) \leq w(P^{sy})$$
+Due to vertex $y$ being successor to vertex $x$, Dijkstra's algorithm must have relaxed $(x,y)$, so $$d[y]\leq d[x]+w(x,y)$$\\
+Now we have that $d[y] = \delta(s,y)$. But when EXTRACT-MIN(Q) is called in the pseudocode (line 5), it returns vertex $v$ instead of $y$, even though both are in the set $V-S$. This means $v$ must have the shortest distance label, so $$d[v] \leq d[y]$$
+This means that $$d[v] = d[y]$$ This contradicts our original assumption of $w(P^{sv}) < d[v]$, since we allready have the shortest path $$d[v] = w(P^{sy}) \leq w(P^{sv})$$.
+$$(w(P^{sv}) \geq d[v]) \neq (w(P^{sv}) < d[v])$$\\
 \textbf{Termination}\\
-We terminate once either $Q = \O$ or if we found $t$. If $\exists t \in S$, we can backtrace the predecessors to obtain $\delta(s,t)$. Otherwise, we have that $\delta(s,t) = \infty$ by the no-path property.\\
+We terminate once $Q = V-S =\O$. If $\exists t \in S$, we can backtrace the predecessors to obtain $\delta(s,t)$. Otherwise, we have that $\delta(s,t) = \infty$ by the no-path property.\\
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bellman-Ford %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Bellmann-Ford algorithm}
@@ -166,11 +174,76 @@ See: http://stackoverflow.com/questions/20123076/can-dijkstras-single-source-sho
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heaps %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Min heaps}
-In the following section, we will describe min heaps that Dijkstra's  and A* search algorithm takes in use...\\
-\subsection{Binary Min-Heaps}fdsas
-\textbf{HVIS DER ER TID TIL DET SKAL DER OGSÅ FORKLARES FIB-HEAPS}
-
+\section{Heaps}
+In the following section, we will describe the priority queues we use for our interpretation of the Dijkstra's  and A* search algorithm.\\
+\subsection{Binary Min-Heaps}
+A binary heap is a tree-like data-structure, where each node contains 2 child nodes, in a balanced way, such that the last parent node may have 1 or 2 child nodes. The height of a tree cotaining n nodes is $\lfloor lg(n) \rfloor$. When the height of the tree grows linearly the amount of nodes therefor grow exponentially. The amount of nodes in af tree of height n would therefor be between $2^n$ and $2^{n+1}-1$. But lets use the approximation of $2^n$ for now.\\\\
+\textbf{BILLEDE AF HOB + ARRAY HER}\\
+By using the properties of the binary heap, we can compute some nodes, given an index thus:\\
+\begin{center}
+\pmb{$Parent(i) = \lfloor i/2 \rfloor$}\\
+\pmb{$Left(i) = 2i$}\\
+\pmb{$Right(i) = 2i+1$}\\
+\end{center}
+In the binary min-heap we have that the value of the nodes are in decreasing order when moving from a leaf node, up through the parent-nodes. Symmetrically, we have that the values are in ascending order when moving down arbitrarily through the nodes. That is, we have for all nodes that \pmb{Min-heap[Parent(i)] $\leq$ Min-heap[i]}.\\\\
+For our shortest-path algorithms to work on the binary-heap datastructure, we need 3 functions:
+\subsubsection{Decrease-Key}
+By calling our \textbf{Relaxation} we use the Decrease-Key method, which is the method of decreasing the value of a given node i, if our relaxation can improve the distance-estimate. It changes the value of node i to our key and as long as the Parent(i) is larger than i, it swaps i with Parent(i), and assigns the the index i to the index Parent(i).\\\\
+\textbf{DECREASE-KEY(Min-Heap, i, key)}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item Min-Heap[i] = key
+\item \textbf{while } i $>$ 1 and Min-Heap[Parent(i)] $>$ Min-Heap[i]
+\item \tab{\textbf{Swap}(Min-Heap[i], Min-Heap[Parent(i)])}
+\item \tab{i = Parent(i)}
+\end{enumerate}
+\subsubsection{Insert}
+Insertion is the method of inserting a new node into our min-heap.\\
+When we insert, we add 1 extra space to our heap, and inserts it here.\\
+We run our Decrease-Key again to have our new node have the right place in the Min-Heap.\\\\
+\textbf{INSERT(Min-Heap, key)}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item \textbf{Size}(Min-Heap) = \textbf{Size}(Min-Heap) + 1
+\item Min-Heap[\textbf{Size}(Min-Heap)] = NIL
+\item DECREASE-KEY(Min-Heap, \textbf{Size}(Min-Heap), key)
+\end{enumerate}
+We can in the ordinary Dijkstras algorithm do this in a more clever way which will be discussed in the '\textbf{Running time analysis}'-section
+\subsubsection{Extract-Min}\\
+By calling our \textbf{Extract-Min} we take out the Min-Heap[1], which is the root of our Min-Heap and will be guaranteed by Insert and Decrease-Key to have the minimum-value. When we do this, we put up our terminal node in the root, decreases the heap-size by 1 and balances it by swapping it with the smallest child-node recursively until we have it in the right spot.\\\\
+\textbf{BALANCE-MIN-HEAP(Min-Heap, i)}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item L = \textbf{Left}(i)
+\item R = \textbf{Right}(i)
+\item \textbf{if } L $\leq$ \textbf{Size}(Min-Heap) \textbf{and} (Min-Heap[L] $<$ Min-Heap[i])
+\item \tab \textbf{then } smallest = L
+\item \tab \textbf{else } smallest = i
+\item \textbf{if } R $\leq$ \textbf{Size}(Min-Heap) \textbf{and} (Min-Heap[R] $<$ Min-Heap[smallest])
+\item \tab \textbf{then } minimum = R
+\item \textbf{if } minimum $\neq$ i
+\item \tab \textbf{then } \textbf{Swap}(Min-Heap[i], Min-Heap[minimum])
+\item \tab \tab \textbf{BALANCE-MIN-HEAP}(Min-Heap, minimum)
+\end{enumerate}
+\  \\
+\textbf{EXTRACT-MIN(Min-Heap)}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item \textbf{if } \textbf{Size}(Min-Heap) $<$ 1
+\item \tab raise error "Heap underflow"
+\item min = Min-Heap[1]
+\item Min-Heap[1] = Min-Heap[\textbf{Size}(Min-Heap)]
+\item \textbf{Size}(Min-Heap) = \textbf{Size}(Min-Heap) - 1
+\item \textbf{BALANCE-MIN-HEAP}(Min-Heap, 1)
+\item \textbf{return} min
+\end{enumerate}
+\  \\
+\subsection{Fibonacci-Heaps}
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dijkstra's algorithm}
 Dijkstra's algorithm takes a weighted graph $G = (V, E)$ and finds the shortest path from a single source to each other vertex in the graph. To keep track of the vertices, the algorithm maintains two sets of vertices. The set $S$ consists of vertices, where the optimal shortest-path estimate from the source $s$ has been figured. The other set $Q$ is a minimum priority queue that contains the remaining vertices, i.e. $Q = V - S$. The algorithm will repeatedly extract a vertex with the minimum shortest-path estimate from $Q$ and add it to $S$, until all vertices have been discovered.\\
@@ -249,6 +322,14 @@ The following figure illustrates the difference between the two algorithms.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% A* search %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A* search}
 Our goal with A* search is to minimize the number of vertices visited, before the target vertex is found.\\\\
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heuristics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 \textbf{How A* search algorithm works}:\\
 We wish to find the shortest path to a single target, so the pseudocode is based on the pseudocode for the modified Dijkstra's algorithm.\\
 
@@ -273,6 +354,10 @@ We wish to find the shortest path to a single target, so the pseudocode is based
 \end{enumerate}
 The difference is now that we also use heurestics to guide our search. Recall that Dijkstra's algorithm selects which vertex to visit next, by extracting the vertex with the lowest shortest-path estimate. For A* search, we also want to examine the Euclidean distance from a vertex $v$ to the target vertex $t$ for all vertices, $\|t-v\|$. Thus, A* search will maintain a min-priority queue $Q$, where vertices are keyed by $d[v]+\|t-v\|$. By repeatedly selecting the vertex with the lowest sum, we can get a more precise path search. This is illustrated on the following figure: ...\\
 
+
+
+\section{Running time analysis}
+---
 
 \section{Results}
 \section{Bibliography}
