@@ -9,3 +9,5 @@ To compile the c++ programs, simply use the command **g++ -o "outputName" "filen
 ![alt tag](https://github.com/Pjuske/Bachelors-Thesis/blob/master/Tidsplan.png?raw=true)
 
 http://www.growingwiththeweb.com/2014/06/fibonacci-heap.html
+
+http://www.cs.princeton.edu/~wayne/cs423/lectures/fibonacci-4up.pdf
