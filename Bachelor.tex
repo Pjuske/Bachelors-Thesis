@@ -2,12 +2,12 @@
 \usepackage[a4paper, hmargin={2.8cm, 2.8cm}, vmargin={2.5cm, 2.5cm}]{geometry}
 \usepackage{eso-pic} % \AddToShipoutPicture
 \usepackage{graphicx} % \includegraphics
-\usepackage{amsmath}
 \usepackage{tabto}
 \usepackage{enumerate}
 \usepackage{txfonts}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{amsmath}
 
 %% Change `ku-farve` to `nat-farve` to use SCIENCE's old colors or
 %% `natbio-farve` to use SCIENCE's new colors and logo.
@@ -84,10 +84,12 @@ can find a shortest path $P = {v_{1}, v_{2}, ..., v_{k}} \in V$ from a
 given source vertex $s \in V$ to all other vertices $v \in V$. I.e.,
 we want to find a path, where the total weight of the visited edges is
 minimal.\\
+We can compute the total sum of weights in a path P containing k vertices thus:\\
+$$w(P) = \displaystyle\sum_{i=1}^{k} w(v_{i-1},v_i)$$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Relaxation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \noindent
-\textbf{Relaxation}\\
+\subsection{Initialization \& Relaxation}
 When searching for the shortest path from a source vertex $s$ to a
 vertex $v$, a shortest-path estimate $d[v]$ is preserved for each
 vertex $v \in V$. To initialize the estimate and predecessor for all vertices, the following function is used:\\
@@ -122,66 +124,85 @@ If the current distance from a source to the vertex $v$ is larger than the path 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Proving the correctness of shortest path algorithms}
+\section{Properties of shortest path algorithms}
 The shortest path algorithms that we have talked about will always find a shortest path, if it exists. This can be proved by looking at the properties that shortest paths and relaxation have:\footnote{Introduction to Algorithms, pg. 650}
 
-\begin{itemize}
-\item \textbf{Triangle inequality}\\
+\subsection{Triangle inequality}\\
 The triangle inequality lemma is a geometric property of triangles which states that the sum of two lengths of any two sides must be greater than or equal to the remaining side. That is, for any triangle with sides $\{x,y,z\}$, we have that $z \leq x+y$.\\\\
 Applied to the shortest path problem we have that for any edge $(u,v) \in E$, we have $\delta(s,v)\leq \delta(s,u) + w(u,v)$ (\textbf{Lemma 1}). Thus the shortest path from s to v must be less than or equal to the shortest path from s to u added to the weigth from u to v.\\
-\item \textbf{Upper-bound property}\\
+\subsection{Upper-bound property}\\
 The upper-bound property says that our estimate for the shortest distance to v is always greater than or equal to the actual shortest path from s to v, for all vertices v$\in$ V.\\\\
 That is $\forall v \in V.(d[v]\geq \delta(s,v))$. Once our estimate holds the actual value for the shortest path, the estimate never changes (\textbf{Lemma 2}).\\
-\item \textbf{No-path property (\textbf{Corollary to Lemma 2})}\\
+\subsection{No-path property} (\textbf{Corollary to Lemma 2})\\
 If there is no path from s to v, then we always have $d[v] = \delta(s,v) = \infty$.\\
-\item \textbf{Convergence property}\\
+\subsection{Convergence property}\\
 The convergence property ensures us that if we from s, at sometime has u to v is the shortest path in G for some u,v $\in$ V, and if the estimated shortest path to u actually is the shortest path, we'd then have (prior to relaxing the edge (u,v)) that the estimated shortest path to v must be the shortest path to v at all times afterward.\\\\
 That is, if $s\rightsquigarrow u\rightarrow v$ is a shortest path, and if $d[u] = \delta(s,u)$, then $d[v] = \delta(s,v)$ is assured at all time afterward (\textbf{Lemma 3}).\\
-\item \textbf{Path-relaxation property}\\
+\subsection{Path-relaxation property}\\
 Our path-relaxation property ensures that the relaxation of a shortest path p will derive that the distance to the k'th vertix in p is equal to the shortest path to vertix k.\\\\
 Let $p = \{v_{1}, v_{2},\cdots ,v_{k}\}$ be a shortest path that goes from $v_{1}$ to $v_{k}$. If the edges are relaxed in the order $(v_{1},v_{2}), (v_{2},v_{3}), \cdots , (v_{k-1}, v_{k})$, then $d[v_{k}] = \delta(s,v_{k})$ once the whole path is relaxed \footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT}(\textbf{Lemma 4}).\\
-\item \textbf{Predecessor-subgraph property}\\
+\subsection{Predecessor-subgraph property}\\
 The predecessor-subgraph/parent-subgraph property ensures that once the shortest path to v is computed for all vertices v, the predecessor subgraph is a shorted-paths tree rooted at s.\\\\
 Such that once $\forall v \in V.(d[v] = \delta(s,v))$ the predecessor subgraph that contains all the vertices with a finite distance from s, but with only edges that connects v to $\pi[v]$ is a shortest-path tree\footnote{Shortest Paths: 6.006 Intro to Algorithms, March 30 2011, Recitation 14. MIT} (\textbf{Lemma 5}).
 \end{itemize}
 
 \includegraphics[scale=0.5]{grimtSP.png}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dijkstra proof %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\noindent\textbf{Proving the correctness of Dijkstra's algorithm:}\\
+\section{Correctness of Dijkstra's algorithm}\\
 To prove that Dijkstra's algorithm work, we will perform an induction proof. Let $S$ be the set of vertices, whose shortest path have been found, $S=V-Q$.\\\\
 \textbf{Loop Invariant}\\
 $\forall v\in S.(d[v] = \delta(s,v))$\\\\
 \textbf{Initialization}\\
-Let $\ell(S)=1$. This is true when S only holds the source vertex, $S = \{s\}$. Since $d[s]=0=\delta(s)$, the invariant holds.\\\\
+Let \textbf{Size}(S)=1. This is true when S only holds the source vertex, $S = \{s\}$. Since $d[s]=0=\delta(s)$, the invariant holds.\\\\
 \textbf{Maintenance}\\
 Let $v$ be the latest vertex added to $S$. Let $S'$ = $S \cup \{v\}$. For each vertex in $S'$, we want to have that our loop invariant holds. EXTRACT-MIN(Q) ensures that the correct distance label gets extracted from $Q$ and put into $S$. We therefore only need to show that $d[v]=\delta(s,v)$ for $S'=S \cup \{v\}$. To prove this, we will perform a contradiction. Assume that there exists a shortest path $P^{sv}=(v_s, v_2, ..., v_v)$ from the source vertex $s$ to target vertex $v$ that has length $$w(P^{sv}) < d[v]$$
 Before adding $v$ to $S$, the path $P^{sv}$ connects a vertex $u\in S$ to the vertex $v\in V-S$ through one or more edges. Let $y$ be the first vertex along $P^{sv}$ that is an element of $V-S$. Let $x\in S$ be $y's$ predecessor along the path $P^{sv}$. Let $P^{sx}=(v_s, v_2, ..., v_x)$ be a subpath of $P^{sv}$ from vertex $s$ to $x$. Once we want to add $v$ to $S$, we have already gone through the edge $(x,y)$: $$w(P^{sx}) + w(x,y) \leq w(P^{sy})$$
 Due to vertex $y$ being successor to vertex $x$, Dijkstra's algorithm must have relaxed $(x,y)$, so $$d[y]\leq d[x]+w(x,y)$$\\
 Now we have that $d[y] = \delta(s,y)$. But when EXTRACT-MIN(Q) is called in the pseudocode (line 5), it returns vertex $v$ instead of $y$, even though both are in the set $V-S$. This means $v$ must have the shortest distance label, so $$d[v] \leq d[y]$$
-This means that $$d[v] = d[y]$$ This contradicts our original assumption of $w(P^{sv}) < d[v]$, since we allready have the shortest path $$d[v] = w(P^{sy}) \leq w(P^{sv})$$.
+This means that $$d[v] = d[y]$$ This contradicts our original assumption of $w(P^{sv}) < d[v]$, since we already have the shortest path $$d[v] = w(P^{sy}) \leq w(P^{sv})$$.
 $$(w(P^{sv}) \geq d[v]) \neq (w(P^{sv}) < d[v])$$\\
 \textbf{Termination}\\
 We terminate once $Q = V-S =\O$. If $\exists t \in S$, we can backtrace the predecessors to obtain $\delta(s,t)$. Otherwise, we have that $\delta(s,t) = \infty$ by the no-path property.\\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bellman-Ford %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Bellmann-Ford algorithm}
-...\\
+\section{Bellman-Ford algorithm}
+Bellman-Ford algorithm solves the single-source shortest-path problem in the case where edge weights may be negative.\\
 If there is a negative cycle, the cost of the shortest path is decreased every time the algorithm runs through the negative cycle. By doing this numerous times, we can receive arbitrarily negative weights, thus making the cost undefined.\\
+If no such cycle is found, the algorithm succesfully computes the shortest paths from s to each vertex v $\in$ V by iteratively decreasing d[v] by relaxing edges $\in$ E until $\delta(s,v)$ is found.\\
+The algorithm returns true if and only if the graph has no negative-weight cycles reachable from the source vertex.\\
+Otherwise it terminates and returns false upon finding such a cycle.\\\\
+The pseudocode for Bellman-Ford's algorithm can be seen below:\footnote{Introduction to Algorithms, pg. 651}\\
 
-See: http://stackoverflow.com/questions/20123076/can-dijkstras-single-source-shortest-path-algorithm-dectect-an-infinite-cycle-i\\
+\textbf{BELLMAN-FORD$(G, w, s)$}
+\begin{enumerate}
+\NumTabs{24}
+\setlength\itemsep{0em}
+\item \textbf{INITIALIZE-SINGLE-SOURCE}$(G, s)$
+\item $\textbf{for } i = 1 \textbf{to } |V[G]| -1$
+\item \tab{$\textbf{for }$ each edge $(u,v) \in E[G]$}
+\item \tab{}\tab{\textbf{RELAX}(u, v, w)}
+\item $\textbf{for }$ each edge $(u,v) \in E[G]$
+\item \tab{$\textbf{if } d[v] > d[u] + w(u,v)$}
+\item \tab{}\teb{\textbf{RETURN } FALSE}
+\item \textbf{RETURN } TRUE
+\end{enumerate}
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heaps %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Heaps}
-In the following section, we will describe the priority queues we use for our interpretation of the Dijkstra's  and A* search algorithm.\\
+In the following section, we will describe the priority queues we use for our interpretation of the Dijkstra's and A* search algorithm.\\
 \subsection{Binary Min-Heaps}
-A binary heap is a tree-like data-structure, where each node contains 2 child nodes, in a balanced way, such that the last parent node may have 1 or 2 child nodes. The height of a tree cotaining n nodes is $\lfloor lg(n) \rfloor$. When the height of the tree grows linearly the amount of nodes therefor grow exponentially. The amount of nodes in af tree of height n would therefor be between $2^n$ and $2^{n+1}-1$. But lets use the approximation of $2^n$ for now.\\\\
+A binary heap is a tree-like data-structure, where each node contains 2 child nodes, in a balanced way, such that the last parent node may have 1 or 2 child nodes. The height of a tree containing n nodes is $\lfloor lg(n) \rfloor$. When the height of the tree grows linearly the amount of nodes therefor grow exponentially. The amount of nodes in af tree of height n would therefor be between $2^n$ and $2^{n+1}-1$. But lets use the approximation of $2^n$ for now.\\\\
 \textbf{BILLEDE AF HOB + ARRAY HER}\\
 By using the properties of the binary heap, we can compute some nodes, given an index thus:\\
 \begin{center}
-\pmb{$Parent(i) = \lfloor i/2 \rfloor$}\\
+$\pmb{Parent(i) = \lfloor i/2 \rfloor}$\\
 \pmb{$Left(i) = 2i$}\\
 \pmb{$Right(i) = 2i+1$}\\
 \end{center}
@@ -211,7 +232,7 @@ We run our Decrease-Key again to have our new node have the right place in the M
 \item DECREASE-KEY(Min-Heap, \textbf{Size}(Min-Heap), key)
 \end{enumerate}
 We can in the ordinary Dijkstras algorithm do this in a more clever way which will be discussed in the '\textbf{Running time analysis}'-section
-\subsubsection{Extract-Min}
+\subsubsection{Extract-Min}\\
 By calling our \textbf{Extract-Min} we take out the Min-Heap[1], which is the root of our Min-Heap and will be guaranteed by Insert and Decrease-Key to have the minimum-value. When we do this, we put up our terminal node in the root, decreases the heap-size by 1 and balances it by swapping it with the smallest child-node recursively until we have it in the right spot.\\\\
 \textbf{BALANCE-MIN-HEAP(Min-Heap, i)}
 \begin{enumerate}
@@ -314,23 +335,20 @@ At start, $s$ is added to the sets $S$ and $Q$, since only the path to the sourc
 The following figure illustrates the difference between the two algorithms.\\
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{dijkstra.jpg}
+\includegraphics[scale=0.5]{dijkstra.png}
 \caption{Dijkstra's algorithm vs. the modified Dijkstra's algorithm}
 \end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% A* search %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A* search}
-Our goal with A* search is to minimize the number of vertices visited, before the target vertex is found.\\\\
-
+A* search algorithm was developed in 1968 and is very similar to Dijkstra's algorithm. It examines an edge only once, and like Dijkstra's, A* will favor vertices who are close to the source vertex. The downside of Dijkstra's is however that the target vertex' direction is unknown. Thus, it might consider paths going in the complete opposite direction.\\
+What makes A* better is that it uses heurestics to guide its search. Like the Greedy Best-first search algorithm, A* uses a heuristic function that can estimate how far away any vertex is from the goal. Vertices close to the goal are then favored over vertices who lie far away. However, Greedy Best-first search only uses the heuristic as information, when making a choice. By making a greedy decision based on only one criterion, the Best-first search algorithm runs considerably faster than Dijkstra's algorithm. The greedy solution is not always optimal though. By ignoring the distance moved so far, the algorithm may continue on a path it's on, even when the path has become very long.\\
+A* is not greedy, since it keeps the estimated distance from source to vertex in mind, before extending the path. A* will therefore not be as fast as Greedy Best-First search, but will at least guarantee that a shortest path is found. By combining the information that Dijkstra's and Best-First search uses, A* search will be at least as fast as Dijkstra's algorithm, since the search can go in a more precise direction. This makes us able to minimize the number of vertices visited, before the target vertex is found. \\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Heuristics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-\textbf{How A* search algorithm works}:\\
+\noindent\textbf{How A* search algorithm works}:\\
 We wish to find the shortest path to a single target, so the pseudocode is based on the pseudocode for the modified Dijkstra's algorithm.\\
 
 \textbf{A* Search$(G, w, s)$}
@@ -339,20 +357,45 @@ We wish to find the shortest path to a single target, so the pseudocode is based
 \setlength\itemsep{0em}
 \item $d[s] = 0$
 \item $S = Q = \{s\}$
-\item \textbf{for} each vertex $v \in G.V$
-\item \tab{INCREASE-KEY$(Q, v, d[v] + \|t-v\| )$}
 \item $\textbf{while } Q \neq  $ \O
 \item \tab{$u = $ EXTRACT-MIN$(Q)$}
 \item \tab{\textbf{if } $u = t$}
 \item \tab{}\tab{\textbf{Terminate}}
 \item \tab{\textbf{for} each vertex $v \in G.Adj[u]$}
 \item \tab{}\tab{\textbf{if } $v \notin S$}
+\item \tab{}\tab{}\tab{INCREASE-KEY$(Q, v, d[v] + \|t-v\| ) $}
 \item \tab{}\tab{}\tab{$S = S \cup \{v\}$}
 \item \tab{}\tab{}\tab{$Q = Q \cup \{v\}$}
 \item \tab{}\tab{}\tab{$d[v]  = d[u] + w(u,v)$}
 \item \tab{}\tab{}\tab{$\pi[v] = u$}
 \end{enumerate}
-The difference is now that we also use heurestics to guide our search. Recall that Dijkstra's algorithm selects which vertex to visit next, by extracting the vertex with the lowest shortest-path estimate. For A* search, we also want to examine the Euclidean distance from a vertex $v$ to the target vertex $t$ for all vertices, $\|t-v\|$. Thus, A* search will maintain a min-priority queue $Q$, where vertices are keyed by $d[v]+\|t-v\|$. By repeatedly selecting the vertex with the lowest sum, we can get a more precise path search. This is illustrated on the following figure: ...\\
+Explanation...To make sure that edges are relaxed properly, A* may only take non-negative edges...
+The difference is now that we also use heurestics to guide our search. Recall that Dijkstra's algorithm selects which vertex to visit next, by extracting the vertex with the lowest shortest-path estimate. For A* search, we also want to examine the Euclidean distance from a vertex $v$ to the target vertex $t$ for all vertices, $\|t-v\|$. Thus, A* search will maintain a min-priority queue $Q$, where vertices are keyed by $d[v]+\|t-v\|$. By repeatedly selecting the vertex with the lowest sum, we can get a more precise path search. This is illustrated on the following figure: ...\\\\
+
+\subsection{Heuristic function for A* search}
+In short, A* search algorithm takes the following two functions in use:
+$$g(n) = \text{exact cost of path from source vertex to any vertex } n$$
+$$h(n) = \text{the heuristic estimated cost from any vertex } n \text{ to the goal}$$
+Each time A* search chooses which vertex to pick, it extracts the vertex $n$ with the lowest $f(n) = g(n)+h(n)$. The heuristic function we use for A* is a function that takes a vertex $v \in V$  and the destination vertex t $\in$ V, computes and returns the euclidean distance from v to t.\\
+The euclidean distance in an n-dimensional space on points v and t is computed thus:\\
+$$\sqrt{\displaystyle\sum_{i=1}^{n} (v_i - t_i)^2}$$
+As we primarily consider plannar graphs, the euclidean distance will be implmented using 2 dimensions thus:\\
+$$\sqrt{(v_x - t_x)^2 + (v_y - t_y)^2}$$
+\textbf{SLUT PÅ AFSNIT}\\
+
+
+In the case where d[v] is relatively small with high eucledean distances, the A* search may choose to visit these, thus the worst-case of A* search is the modified dijkstra.\\\\
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% A* search proof %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Correctness of A* search algorithm}\\
+To prove that A* search algorithm work, we will perform an induction proof. Let $S$ be the set of vertices, whose shortest path have been found, $S=V-Q$.\\\\
+
+
+
+
 
 
 
