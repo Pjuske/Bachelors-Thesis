@@ -1,243 +1,83 @@
-#include <assert.h>
-#include <climits>
+#include <algorithm> 
 #include <iostream>
-#include <stdlib.h>
-#include "dijkstra.h"
-#include "relaxation.h"
 using namespace std;
+#include <queue>
+#include <set>
+#include <vector>
 
+#define ii pair<int,int>
 
-char alphabet[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m',
-					 'n','o','p','q','r','s','t','u','v','w','x','y','z'};
+vector<ii> graph[100];
+int dist[100];
+bool visited[100];
 
-/*
- ********************************** GRAPH ************************************
- */
-int add_vertices(vertex graph[], int amount){
-	for (int i = 0; i < amount; i++){
-		graph[i].name  = alphabet[i];
-	}
-	return 0;
-}
+void dijkstra_modified(int vertices, int source){
+	//define priority queue pq
+	set<ii> pq;
+	//queue containing predecessor. First arg: predecessor, second arg: current vertex
+	set<ii> predecessor;
+	//insert source vertex and mark it as visited
+	pq.insert(ii(0,source));
+	predecessor.insert(ii(source, source));
 
+	dist[source] = 0;
+	visited[source] = 1;
 
-int add_edges(vertex graph[], char src, char dst[], int weight[], int size) {
-	int s = 0;
-	//find the position of the src and destionation vertex in graph
-	//assumes that a vertex with the given name exists in graph.
+	//While pq != Ø
+	while(!pq.empty()){
+		//extract vertex u from priority queue by letting iterator point to beginning
+		ii u = *pq.begin();	
+		pq.erase(u);
+		visited[u.second] = 1;
 
-	char name = src;
-	while (graph[s].name != name){
-		s++;
-	}
-	
-	//allocate memory for the edge
-	//int e = sizeof(graph[i].edges) / sizeof(graph[i].edges[0]);
-	for (int i = 0; i < size; i++) {
-		
-		graph[s].edges[i] = (edge*) malloc(sizeof(edge));
-
-		int d = 0;
-		while (graph[d].name != dst[i]){
-			d++;
-		}
-
-		//add the edge with the respective src, dst, and weight values.
-		graph[s].edges[i]->weight  =  weight[i];
-		graph[s].edges[i]->src     =  graph[s];
-		graph[s].edges[i]->dest    =  graph[d];
-
-		cout << "source: " << graph[s].name << endl;
-		cout << weight[i] << " to " << graph[d].name << endl << endl;
-	}
-	return 0;
-}
-
-/*
- ***************************** HELPER FUNCTIONS ******************************
- */
-//return size of vertex array
-int find_size(vertex array[]){
-	return sizeof(array) / sizeof(array[0]);
-}
-
-//returns the weight of the edge between vertex u and v. 
-int edge_weight(vertex u, vertex v){
-	for (int i = 0; i < sizeof(u.edges); i++){
-		if (u.edges[i]->dest.name == v.name){
-			return u.edges[i]->weight;
-		}
-	}
-	//return error if there is no path between u and v.
-	return -1;
-}
-
-
-//Return 1 if the shortest path to the given vertex has been found.
-int path_found(vertex closed_set[], vertex v){
-	for (int i = 0; i < sizeof(closed_set); i++){
-		if (closed_set[i].name == v.name){
-			return 1;
-		}
-	}
-	return 0;
-}
-
-/*
- ********************************** HEAPS ************************************
- */
-int parent(int i){
-	return (i/2);
-}
-int left(int i){
-	return 2*i;
-}
-int right(int i){
-	return 2*i + 1;
-}
-
-void heap_swap(vertex u, vertex v){
-	vertex tmp = u;
-	u = v;
-	v = tmp;
-}
-
-int heap_decrease_key(vertex heap[], int i, int key){
-	if (key > heap[i].estimate) {
-		return -1;
-	}
-
-	heap[i].estimate = key;
-	while (i > 0 && heap[parent(i)].estimate > heap[i].estimate){
-		heap_swap(heap[i], heap[parent(i)]);
-		i =  parent(i);
-	}
-	return 0;
-}
-
-void heap_insert(vertex heap[], int key){
-	//heap.size++;
-	int size = find_size(heap);
-	heap[size - 1].estimate = INT_MAX;
-	heap_decrease_key(heap, size-1, key);
-}
-
-void heap_balance_min_heap(vertex heap[], int i){
-	int l, r, size, min;
-
-	l  = left(i);
-	r = right(i);
-	size = find_size(heap);
-	//find vertex with minimum estimate
-	if (l <= size && heap[l].estimate < heap[i].estimate){
-		min = l;
-	}
-	else {
-		min = i;
-	}
-	if (r <= size && heap[r].estimate < heap[min].estimate){
-		min = r;
-	}
-	//swap if vertex i does not contain minimum key
-	if (min != i){
-		heap_swap(heap[i], heap[min]);
-		heap_balance_min_heap(heap, min);
-	}
-}
-
-vertex heap_extract_min(vertex heap[]){
-	//heap underflow if size below one
-	int size = find_size(heap);
-	assert(size >= 1);
-
-	//extract the vertex with minimum key and decrease size
-	vertex min = heap[0];
-	heap[0] = heap[size - 1];
-	//heap.size--;
-	//make sure heap property is withheld
-	heap_balance_min_heap(heap, 0);
-	return min;
-}
-
-
-/*
- ********************************* DIJKSTRA **********************************
- */
-
-void dijkstra(vertex graph[], int weight, vertex source, vertex target){
-	//initialization
-	source.estimate = 0;
-	int n = 1;
-	vertex closed_set[sizeof(graph)] = {source};
-	vertex min_queue[sizeof(graph)] = {source};
-	int q_size = find_size(min_queue);
-
-
-	//while Q != Ø
-	while (q_size > 0){
-		vertex u = heap_extract_min(min_queue);
-		q_size--;
-
-		if (u.name = target.name) {
-			return;
-		}
-		//examine each vertex v adjacent to u
-		int edge_size = sizeof(u.edges) / sizeof(u.edges[0]);
-		for (int i = 0; i < edge_size; i++){
-			vertex v = u.edges[i]->dest;
-			if (!path_found(closed_set, v)){
-				q_size++;
-				//insert vertex v into S and Q
-				closed_set[n] = v;
-				min_queue[n]  = v;
-				
-				//update estimate and predecessor for v
-				assert(edge_weight(u,v) != -1);
-				v.estimate = u.estimate + edge_weight(u,v);
-				v.predecessor = &u;
+		//for each vertex v adjacent to u
+		for(int i = 0; i < graph[u.second].size(); i++){
+			//if v has not been visited
+			if(visited[graph[u.second][i].second] == 0){
+				pq.insert(ii(dist[u.second]+graph[u.second][i].first , graph[u.second][i].second));
+				//mark as visited
+				visited[graph[u.second][i].second] = 1;
+				dist[graph[u.second][i].second] = dist[u.second] + graph[u.second][i].first;
 			}
+			//if v has been visited
+			else if(visited[graph[u.second][i].second]==1 && dist[graph[u.second][i].second] > dist[u.second]+graph[u.second][i].first){
+				pq.erase(ii(dist[graph[u.second][i].second],graph[u.second][i].second));
+				pq.insert(ii(dist[u.second]+graph[u.second][i].first,graph[u.second][i].second));
+				dist[graph[u.second][i].second] =  dist[u.second]+graph[u.second][i].first;
+			} 
 		}
 	}
 }
 
+//void print_path(int dist[], int vertices, int source, int target){
+void print_path(int dist[], int vertices) {
+	cout << "The shortest path for the vertices are:" << endl;
 
+	for (int i = 1; i <= vertices; i++){
+		cout << dist[i] << " to vertex " << i << endl; 
+	}
+}
 
 
 int main(){
-	int amount = 5;
-	//int edge_number = 0;
+	int vertices, edges, source;
 
-	//add vertices into the graph
-	vertex graph[amount];
-	add_vertices(graph, amount);
+	cout << "Choose number of vertices:\n";
+	cin >> vertices;
 	
-	//print the name of all vertices
-	for (int i = 0; i < amount; i++) { 
-		cout << "vertex " << i << ": " << graph[i].name << endl;
+	cout << "Choose number of edges\n";
+	cin >> edges;
+	
+	cout << "Enter the edges and their weights:\n";
+	for(int i = 0; i < edges ;i++){
+		int x,y,w;
+		cin >> x >> y >> w;
+		//http://www.cplusplus.com/reference/vector/vector/push_back/
+		graph[x].push_back(ii(w,y));
 	}
-	cout << endl;
-	
 
-	char edge_a[2] = {'b','c'};
-	char edge_b[1] = {'e'}; 
-	char edge_c[2] = {'b','d'};
-	char edge_d[1] = {'e'};
-
-	int weight_a[2] = {10,5};
-	int weight_b[1] = {2};
-	int weight_c[2] = {2,7};
-	int weight_d[1] = {6};
-
-	add_edges(graph, 'a', edge_a, weight_a, 2);
-	add_edges(graph, 'b', edge_b, weight_b, 1);
-	add_edges(graph, 'c', edge_c, weight_c, 2);
-	add_edges(graph, 'd', edge_d, weight_d, 1);
-
-	int size = sizeof(graph) / sizeof(graph[0]);
-	//for (int i = 0; i < (size-1); i++) //Print function for printing edges, does only print the first edge in each vertix though!
-	//{}
-
-
-	//dijkstra(graph[], int weight, vertex source, vertex target){
+	source = 1;
+	dijkstra_modified(vertices, source);
+	print_path(dist, vertices);
 	return 0;
 }
