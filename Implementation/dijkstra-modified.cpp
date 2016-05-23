@@ -1,9 +1,8 @@
-//#include <algorithm> 
 #include <iostream>
-using namespace std;
 #include <queue>
 #include <set>
 #include <vector>
+using namespace std;
 
 #define ii pair<int,int>
 
@@ -51,7 +50,7 @@ void dijkstra_modified(int vertices, int source, int target){
 				pq.insert(ii(dist[vertex_u] + weight_v , vertex_v));
 				dist[vertex_v] = dist[vertex_u] + weight_v;
 
-				//update predecessor
+				//insert predecessor
 				predecessor[vertex_v].push_back(ii(vertex_u, vertex_v));
 			}
 
@@ -64,8 +63,7 @@ void dijkstra_modified(int vertices, int source, int target){
 					dist[vertex_v] = dist[vertex_u] + weight_v;
 				
 					//update predecessor		
-					predecessor[vertex_v].pop_back();
-					predecessor[vertex_v].push_back(ii(vertex_u, vertex_v));		
+					predecessor[vertex_v].back().first = vertex_u;
 				}
 			}
 		}
@@ -96,25 +94,21 @@ void print_path(int source, int target){
 
 
 int main(){
-	int vertices, edges, source, target;
+	int vertices =  5;
+	int source   =  1; int target = 5;
 
-	cout << "How many vertices in the graph?" << endl;
-	cin >> vertices;
-	
-	cout << "How many edges in the graph?" << endl;
-	cin >> edges;
-	
-	cout << "Weight of the edges?" << endl;
-	for(int i = 0; i < edges ;i++){
-		int x,y,w;
-		cin >> x >> y >> w;
-		graph[x].push_back(ii(w,y));
-	}
+	//add edges
+	graph[1].push_back(ii(10,2));
+	graph[1].push_back(ii(5,3));
+	graph[2].push_back(ii(2,5));
+	graph[3].push_back(ii(2,2));
+	graph[3].push_back(ii(7,4));
+	graph[4].push_back(ii(6,5));
 
-	source = 1;
-	target = 5;
+
 	dijkstra_modified(vertices, source, target);
-	
+
+	//print path and total distance	
 	cout << endl << "Path: " << endl;
 	print_path(source, target);
 	cout << endl << "Total distance: " << endl;
