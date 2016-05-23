@@ -6,7 +6,7 @@ It contains relevant reading material, as well with report and appendices used.
 
 TODO AS OF 23/5 2016:
 
-**Bellman Ford bevis - Kig i bogen**
+**Bellman Ford bevis - Kig i bogen** DONE - FÅ FEEDBACK FRA SØREN?
 
 **Bellman Ford Implementation**
 
