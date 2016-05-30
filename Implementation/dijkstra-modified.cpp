@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <queue>
 #include <set>
@@ -5,20 +6,20 @@
 using namespace std;
 
 #define ii pair<int,int>
+#define di pair<float, int>
 
-vector<ii> graph[100];
+vector<di> graph[100];
 vector<ii> predecessor[100];
+float dist[100];
 bool visited[100];
-int dist[100];
-
 
 /* Runs Dijkstra's algorithm until target vertex is found */
 void dijkstra_modified(int vertices, int source, int target){
 	//define priority queue pq
-	set<ii> pq;
+	set<di> pq;
 	
 	//insert source vertex and mark it as visited
-	pq.insert(ii(0, source));
+	pq.insert(di(0, source));
 	predecessor[source].push_back(ii(source, source));
 	dist[source] = 0;
 	visited[source] = 1;
@@ -26,7 +27,7 @@ void dijkstra_modified(int vertices, int source, int target){
 	//While pq != Ø
 	while(!pq.empty()){
 		//extract vertex u from priority queue
-		ii u = *pq.begin();	
+		di u = *pq.begin();	
 		int vertex_u = u.second;
 		
 		//if target found
@@ -40,14 +41,14 @@ void dijkstra_modified(int vertices, int source, int target){
 		//For each vertex v adjacent to u:
 		for(int i = 0; i < graph[vertex_u].size(); i++){
 			//define vertex v and w(u,v)
-			int vertex_v = graph[vertex_u][i].second;
-			int weight_v = graph[vertex_u][i].first;
+			int   vertex_v = graph[vertex_u][i].second;
+			float weight_v = graph[vertex_u][i].first;
 
 			//if v has not been visited
 			if(visited[vertex_v] == 0){
 				//mark as visited and update pq + distance.
 				visited[vertex_v] = 1;
-				pq.insert(ii(dist[vertex_u] + weight_v , vertex_v));
+				pq.insert(di(dist[vertex_u] + weight_v , vertex_v));
 				dist[vertex_v] = dist[vertex_u] + weight_v;
 
 				//insert predecessor
@@ -58,8 +59,8 @@ void dijkstra_modified(int vertices, int source, int target){
 			else {
 				if (dist[vertex_v] > dist[vertex_u] + weight_v){
 					//update pq + distance
-					pq.erase(ii(dist[vertex_v], vertex_v));
-					pq.insert(ii(dist[vertex_u] + weight_v , vertex_v));
+					pq.erase(di(dist[vertex_v], vertex_v));
+					pq.insert(di(dist[vertex_u] + weight_v , vertex_v));
 					dist[vertex_v] = dist[vertex_u] + weight_v;
 				
 					//update predecessor		
@@ -71,7 +72,7 @@ void dijkstra_modified(int vertices, int source, int target){
 }
 
 /* Print distance from source to target vertex*/
-void print_dist(int dist[], int target){
+void print_dist(float dist[], int target){
 	cout << dist[target] << endl;
 }
 
@@ -94,19 +95,22 @@ void print_path(int source, int target){
 
 
 int main(){
-	int vertices =  5;
-	int source   =  1; int target = 5;
-
-	//add edges
-	graph[1].push_back(ii(10,2));
-	graph[1].push_back(ii(5,3));
-	graph[2].push_back(ii(2,5));
-	graph[3].push_back(ii(2,2));
-	graph[3].push_back(ii(7,4));
-	graph[4].push_back(ii(6,5));
+	int vertices =  41;
+	int source   =  4; int target = 25;
 
 
+	//read txt file and add the edges
+	fstream txt("graph_0.txt", ios::in);
+	int u, v;
+	float w;
+
+	while (txt >> u >> v >> w){
+		graph[u].push_back(di(w,v));
+	}
+
+	//call Dijkstra's algorithm
 	dijkstra_modified(vertices, source, target);
+
 
 	//print path and total distance	
 	cout << endl << "Path: " << endl;

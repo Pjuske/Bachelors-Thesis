@@ -1,13 +1,15 @@
 #include <climits>
+#include <fstream>
 #include <iostream>
 #include <vector>
 using namespace std;
 
 #define ii pair<int, int>
+#define id pair<int, float>
 
-vector<ii> graph[100];
+vector<id> graph[100];
 vector<ii> predecessor[100];
-int dist[100];
+float dist[100];
 
 /* Runs Bellman-Ford algorithm. Returns true if no neg-weight cycles found */
 bool bellman_ford(int vertices, int source){
@@ -19,12 +21,12 @@ bool bellman_ford(int vertices, int source){
 
 	//for i = 1 to |G.V|-1
 	int passes = 1;
-	while (passes != 4){
+	while (passes <= (vertices-1)){
 		//go through all vertices and the edges coming from them
 		for (int vertex_u = 1; vertex_u <= vertices-1; vertex_u++){
 			for(int e = 0; e < graph[vertex_u].size(); e++){
-				int vertex_v = graph[vertex_u][e].first;
-				int weight_v = graph[vertex_u][e].second;
+				int vertex_v   = graph[vertex_u][e].first;
+				float weight_v = graph[vertex_u][e].second;
 
 				//make sure there is an edge from u to v and then relax.
 				if (dist[vertex_u] != INT_MAX && dist[vertex_v] > dist[vertex_u] + weight_v){
@@ -47,7 +49,7 @@ bool bellman_ford(int vertices, int source){
 	for (int i = 1; i <= vertices; i++){
 		for(int j = 0; j < graph[i].size(); j++){
 			int vertex_v = graph[i][j].first;
-			int weight_v = graph[i][j].second;
+			float weight_v = graph[i][j].second;
 	
 			if (dist[vertex_v] > dist[i] + weight_v){
 				return false;
@@ -59,7 +61,7 @@ bool bellman_ford(int vertices, int source){
 
 
 /* Print distance from source to target vertex*/
-void print_dist(int dist[], int target){
+void print_dist(float dist[], int target){
 	cout << dist[target] << endl;
 }
 
@@ -82,8 +84,8 @@ void print_path(int source, int target){
 
 
 int main(){
-	int vertices = 5;
-	int source   = 1; int target = 5;
+	int vertices = 41;
+	int source   = 4; int target = 25;
 
 	/* Test for negative weight-cycle
 	 *
@@ -94,13 +96,14 @@ int main(){
 	 *
 	 */
 
-	//add edges
-	graph[1].push_back(ii(2,10));
-	graph[1].push_back(ii(3,5));
-	graph[2].push_back(ii(5,2));
-	graph[3].push_back(ii(2,2));
-	graph[3].push_back(ii(4,7));
-	graph[4].push_back(ii(5,6));
+	//read txt file and add the edges
+	fstream txt("graph_0.txt", ios::in);
+	int u, v;
+	float w;
+
+	while (txt >> u >> v >> w){
+		graph[u].push_back(id(v,w));
+	}
 
 	//check for negative weight-cycles
 	int retval = bellman_ford(vertices, source);
