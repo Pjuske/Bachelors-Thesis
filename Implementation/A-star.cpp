@@ -1,3 +1,5 @@
+#include <climits>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -5,18 +7,18 @@
 #include <vector>
 using namespace std;
 
-
 #define ii pair<int,int>
 #define di pair<float, int>
-#define VERTEX_AMOUNT 41
-#define EDGE_AMOUNT 533
+#define VERTEX_AMOUNT 41    //41 , 160 , 638 , 2542
+#define EDGE_AMOUNT 533    //533 , 4240 , 34644 , 262844
 
 vector<di> graph[VERTEX_AMOUNT];
 vector<ii> predecessor[VERTEX_AMOUNT];
+
 float dist[VERTEX_AMOUNT];
 float target_dist[VERTEX_AMOUNT];
 bool visited[VERTEX_AMOUNT];
-
+int edge_lookups = 0;
 
 /* Runs A* search algorithm until target vertex is found */
 void a_star(int vertices, int source, int target){
@@ -45,6 +47,7 @@ void a_star(int vertices, int source, int target){
 
 		//For each vertex v adjacent to u:
 		for(int i = 0; i < graph[vertex_u].size(); i++){
+			edge_lookups++;
 			//define vertex v and w(u,v)
 			int   vertex_v = graph[vertex_u][i].second;
 			float weight_v = graph[vertex_u][i].first;
@@ -76,11 +79,18 @@ void a_star(int vertices, int source, int target){
 			}
 		}
 	}
+
 }
 
 /* Print distance from source to target vertex*/
 void print_dist(float dist[], int target){
-	cout << dist[target] << endl;
+	cout << dist[target] << endl << endl;
+
+	for (int i = 0; i < VERTEX_AMOUNT; i++){
+		if (visited[i]){	
+			dist[i] = INT_MAX;
+		}
+	}
 }
 
 /* Print path taken from source to target vertex */
@@ -100,9 +110,8 @@ void print_path(int source, int target){
 	}
 }
 
-
 int main(){
-	int source   =  7; int target = 39;
+	int source   =  7; int target = 17;
 	fstream data;
 
 	//read edge data
@@ -122,14 +131,23 @@ int main(){
 		target_dist[i] = w;
 	}
 
-	//call A* search
+	//run A* search
+	const clock_t begin_time = clock();
 	a_star(VERTEX_AMOUNT, source, target);
+	
+	//print runtime
+	const clock_t end_time = clock();
+	cout << "Time:" << endl;
+	cout << float(end_time - begin_time) / (CLOCKS_PER_SEC/1000) << endl;
 
 	//print path and total distance	
 	cout << endl << "Path: " << endl;
 	print_path(source, target);
 	cout << endl << "Total distance: " << endl;
 	print_dist(dist, target);
+	
+	//print amount of edge lookups
+	cout << "Lookups:" << endl << edge_lookups << endl;
 	
 	return 0;
 }

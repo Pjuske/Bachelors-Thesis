@@ -8,13 +8,18 @@ using namespace std;
 #define ii pair<int,int>
 #define di pair<float, int>
 
-vector<di> graph[100];
-vector<ii> predecessor[100];
-float dist[100];
-bool visited[100];
+#define VERTEX_AMOUNT 41
+#define EDGE_AMOUNT 533
+
+vector<di> graph[VERTEX_AMOUNT];
+vector<ii> predecessor[VERTEX_AMOUNT];
+float dist[VERTEX_AMOUNT];
+bool visited[VERTEX_AMOUNT];
+int edge_lookups = 0;
 
 /* Runs Dijkstra's algorithm until target vertex is found */
 void dijkstra_modified(int vertices, int source, int target){
+	
 	//define priority queue pq
 	set<di> pq;
 	
@@ -40,6 +45,8 @@ void dijkstra_modified(int vertices, int source, int target){
 
 		//For each vertex v adjacent to u:
 		for(int i = 0; i < graph[vertex_u].size(); i++){
+			edge_lookups++;
+
 			//define vertex v and w(u,v)
 			int   vertex_v = graph[vertex_u][i].second;
 			float weight_v = graph[vertex_u][i].first;
@@ -73,7 +80,7 @@ void dijkstra_modified(int vertices, int source, int target){
 
 /* Print distance from source to target vertex*/
 void print_dist(float dist[], int target){
-	cout << dist[target] << endl;
+	cout << dist[target] << endl << endl;
 }
 
 /* Print path taken from source to target vertex */
@@ -95,28 +102,35 @@ void print_path(int source, int target){
 
 
 int main(){
-	int vertices =  41;
-	int source   =  4; int target = 25;
-
+	int source   =  7; int target = 17;
 
 	//read txt file and add the edges
-	fstream txt("graph_0.txt", ios::in);
+	fstream data("data_0.txt", ios::in);
 	int u, v;
 	float w;
 
-	while (txt >> u >> v >> w){
+	for (int i = 0; i < EDGE_AMOUNT; i++){
+		data >> u >> v >> w;
 		graph[u].push_back(di(w,v));
 	}
 
-	//call Dijkstra's algorithm
-	dijkstra_modified(vertices, source, target);
+	//run Dijkstra's algorithm
+	const clock_t begin_time = clock();
+	dijkstra_modified(VERTEX_AMOUNT, source, target);
 
+	//print runtime
+	const clock_t end_time = clock();
+	cout << "Time:" << endl;
+	cout << float(end_time - begin_time) / (CLOCKS_PER_SEC/1000) << endl;
 
 	//print path and total distance	
 	cout << endl << "Path: " << endl;
 	print_path(source, target);
 	cout << endl << "Total distance: " << endl;
 	print_dist(dist, target);
+
+	//print amount of edge lookups
+	cout << "Lookups:" << endl << edge_lookups << endl;
 	
 	return 0;
 }
