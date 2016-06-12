@@ -1,2 +1,0 @@
-https://en.wikipedia.org/wiki/Combinatorial_search
-http://courses.csail.mit.edu/6.006/spring11/rec/rec14.pdf
