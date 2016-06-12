@@ -1,27 +1,9 @@
-# Bachelors-Thesis
+# Bachelors Thesis
 
-This is a Git-Hub page for the Bachelors thesis.
+This is a Git-Hub page for the bachelors thesis in the spring 2016, by Susanne Truong and Bjarke Kingo Iversen. 
 
-It contains relevant reading material, as well with report and appendices used.
+It contains relevant implementaions, project idea as well with the thesis itself.
 
-TODO AS OF 23/5 2016:
+**Abstract**
 
-**Bellman Ford bevis - Kig i bogen** DONE - FÅ FEEDBACK FRA SØREN?
 
-**Bellman Ford Implementation**
-
-**A-Search Implemntation**
-
-**A-Search Running time analysis**
-
-**Test/Sammenligne implementationer**
-
-**Nice: 4-way heaps implemenation + teorig**
-
-To compile the c++ programs, simply use the command **g++ -o "outputName" "filename.cpp"**. Headers are automatically compiled.
- 
-![alt tag](https://github.com/Pjuske/Bachelors-Thesis/blob/master/Tidsplan.png?raw=true)
-
-http://www.growingwiththeweb.com/2014/06/fibonacci-heap.html
-
-http://www.cs.princeton.edu/~wayne/cs423/lectures/fibonacci-4up.pdf
